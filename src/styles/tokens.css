@@ -1,0 +1,109 @@
+/* ============================================================
+   Design tokens - the single source of visual truth.
+   Dark, ink-blue editorial base + two accents:
+   teal = measurement/signal, amber = insight/outcome.
+   ============================================================ */
+
+:root {
+  /* --- Color: neutrals (ink-blue, perceptually even via oklch) --- */
+  --ink-900: oklch(15% 0.018 255);   /* page background          */
+  --ink-850: oklch(18% 0.018 255);   /* raised background        */
+  --ink-800: oklch(21% 0.019 255);   /* card surface             */
+  --ink-700: oklch(27% 0.020 255);   /* card surface, hover      */
+  --ink-600: oklch(38% 0.018 255);   /* hairlines, dividers      */
+  --ink-400: oklch(69% 0.013 255);   /* faint labels   (7.0:1)  */
+  --ink-300: oklch(72% 0.012 255);   /* secondary text  (7.2:1)  */
+  --ink-100: oklch(94% 0.006 255);   /* primary text   (15.6:1)  */
+  --ink-000: oklch(99% 0.002 255);   /* headings                 */
+
+  /* --- Color: accents --- */
+  --signal: oklch(80% 0.125 195);         /* teal: data, metrics, links */
+  --signal-dim: oklch(62% 0.105 195);
+  --signal-glow: oklch(80% 0.125 195 / 0.14);
+  --insight: oklch(82% 0.135 78);         /* amber: outcomes, highlights */
+  --insight-dim: oklch(66% 0.120 78);
+  --insight-glow: oklch(82% 0.135 78 / 0.14);
+
+  /* --- Semantic --- */
+  --bg: var(--ink-900);
+  --bg-raised: var(--ink-850);
+  --surface: var(--ink-800);
+  --surface-hover: var(--ink-700);
+  --line: oklch(38% 0.018 255 / 0.55);
+  --line-strong: oklch(45% 0.020 255 / 0.8);
+  --text: var(--ink-100);
+  --text-muted: var(--ink-300);
+  --text-faint: var(--ink-400);
+  --heading: var(--ink-000);
+
+  /* --- Type families --- */
+  --font-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+
+  /* --- Type scale: fluid, 320px -> 1440px --- */
+  --fs-micro: clamp(0.688rem, 0.67rem + 0.08vw, 0.75rem);
+  --fs-xs: clamp(0.75rem, 0.73rem + 0.1vw, 0.813rem);
+  --fs-sm: clamp(0.875rem, 0.85rem + 0.12vw, 0.938rem);
+  --fs-base: clamp(1rem, 0.96rem + 0.18vw, 1.063rem);
+  --fs-md: clamp(1.125rem, 1.06rem + 0.3vw, 1.25rem);
+  --fs-lg: clamp(1.375rem, 1.25rem + 0.6vw, 1.75rem);
+  --fs-xl: clamp(1.75rem, 1.5rem + 1.2vw, 2.5rem);
+  --fs-2xl: clamp(2.25rem, 1.8rem + 2.2vw, 3.5rem);
+  --fs-3xl: clamp(2.75rem, 1.9rem + 4.2vw, 5.25rem);
+  --fs-metric: clamp(2.75rem, 2rem + 3.4vw, 4.5rem);
+
+  /* --- Space scale --- */
+  --space-3xs: clamp(0.25rem, 0.24rem + 0.05vw, 0.313rem);
+  --space-2xs: clamp(0.5rem, 0.48rem + 0.1vw, 0.625rem);
+  --space-xs: clamp(0.75rem, 0.71rem + 0.2vw, 0.938rem);
+  --space-sm: clamp(1rem, 0.95rem + 0.25vw, 1.25rem);
+  --space-md: clamp(1.5rem, 1.4rem + 0.5vw, 2rem);
+  --space-lg: clamp(2rem, 1.8rem + 1vw, 3rem);
+  --space-xl: clamp(3rem, 2.6rem + 2vw, 4.5rem);
+  --space-2xl: clamp(4rem, 3.2rem + 4vw, 7rem);
+  --space-3xl: clamp(5.5rem, 4rem + 7vw, 11rem);
+
+  /* --- Layout --- */
+  --measure: 62ch;              /* readable prose width */
+  --container: 76rem;
+  --container-narrow: 54rem;
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 18px;
+
+  /* --- Elevation (subtle: depth comes from hairlines, not drop shadows) --- */
+  --shadow-1: 0 1px 2px oklch(0% 0 0 / 0.3);
+  --shadow-2: 0 8px 24px -8px oklch(0% 0 0 / 0.5);
+  --shadow-3: 0 24px 60px -20px oklch(0% 0 0 / 0.7);
+
+  /* --- Motion --- */
+  --dur-fast: 140ms;
+  --dur: 240ms;
+  --dur-slow: 480ms;
+  /* Both curves settle without overshoot - the analytical read this brand
+     wants. ~240ms out-cubic lands close to a critically damped spring
+     (mass 1, tension 170, friction 26 -> no overshoot, ~307ms settle). */
+  --ease: cubic-bezier(0.33, 1, 0.68, 1);      /* out-cubic  */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Motion is decoration: when the OS asks for less, give less - but never
+   remove content. Reveal animations resolve to their final state instead. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 1ms;
+    --dur: 1ms;
+    --dur-slow: 1ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}

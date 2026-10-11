@@ -1,0 +1,22 @@
+{
+  "name": "deepak-gond-portfolio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Portfolio of Deepak Jaygopal Gond - Data Analyst | Data Engineering",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gsap": "^3.13.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.2.0",
+    "vite": "^7.1.0"
+  }
+}

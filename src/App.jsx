@@ -1,0 +1,42 @@
+import { useCallback, useRef, useState } from 'react';
+import { SiteHeader } from './components/SiteHeader.jsx';
+import { Hero } from './components/Hero.jsx';
+import { Impact } from './components/Impact.jsx';
+import { Workflow } from './components/Workflow.jsx';
+import { Experience } from './components/Experience.jsx';
+import { Projects } from './components/Projects.jsx';
+import { Skills } from './components/Skills.jsx';
+import { About } from './components/About.jsx';
+import { Contact } from './components/Contact.jsx';
+import { SiteFooter } from './components/SiteFooter.jsx';
+import { useScrollAnimations } from './hooks/useScrollAnimations.js';
+
+export default function App() {
+  const mainRef = useRef(null);
+  const [pipeline, setPipeline] = useState(null);
+
+  // Stable identity: HeroCanvas runs an effect keyed on this callback.
+  const handleSceneReady = useCallback((scene) => setPipeline(scene), []);
+
+  useScrollAnimations(mainRef, pipeline);
+
+  return (
+    <>
+      <a className="skip-link" href="#main">Skip to content</a>
+      <SiteHeader />
+
+      <main id="main" ref={mainRef}>
+        <Hero onSceneReady={handleSceneReady} />
+        <Impact />
+        <Workflow />
+        <Experience />
+        <Projects />
+        <Skills />
+        <About />
+        <Contact />
+      </main>
+
+      <SiteFooter />
+    </>
+  );
+}

@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Local env / editor
+*.local
+.vite/
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*

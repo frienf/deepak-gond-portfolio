@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="Inter, Segoe UI, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12161f" />
+      <stop offset="1" stop-color="#0d1117" />
+    </linearGradient>
+    <radialGradient id="glow" cx="0.78" cy="0.42" r="0.5">
+      <stop offset="0" stop-color="#4fd8e4" stop-opacity="0.22" />
+      <stop offset="1" stop-color="#4fd8e4" stop-opacity="0" />
+    </radialGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0v48" fill="none" stroke="#2b3444" stroke-width="1" />
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#grid)" opacity="0.5" />
+  <rect width="1200" height="630" fill="url(#glow)" />
+
+  <!-- Pipeline lattice: many raw nodes resolving into one insight -->
+  <g stroke="#4fd8e4" stroke-opacity="0.28" stroke-width="1">
+    <path d="M800 140 950 250 1080 315M800 240 950 250 1080 315M800 330 950 300 1080 315M800 420 950 350 1080 315M800 500 950 350 1080 315M860 180 950 250M860 460 950 350" />
+  </g>
+  <g fill="#4fd8e4">
+    <circle cx="800" cy="140" r="4" opacity="0.7" /><circle cx="800" cy="240" r="4" opacity="0.7" />
+    <circle cx="800" cy="330" r="4" opacity="0.7" /><circle cx="800" cy="420" r="4" opacity="0.7" />
+    <circle cx="800" cy="500" r="4" opacity="0.7" /><circle cx="860" cy="180" r="3" opacity="0.5" />
+    <circle cx="860" cy="460" r="3" opacity="0.5" />
+    <circle cx="950" cy="250" r="7" opacity="0.85" /><circle cx="950" cy="300" r="7" opacity="0.85" />
+    <circle cx="950" cy="350" r="7" opacity="0.85" />
+  </g>
+  <circle cx="1080" cy="315" r="30" fill="#ffc46b" opacity="0.14" />
+  <circle cx="1080" cy="315" r="12" fill="#ffc46b" />
+
+  <text x="80" y="150" fill="#4fd8e4" font-family="JetBrains Mono, monospace" font-size="20" letter-spacing="4">
+    DATA ANALYST &#183; DATA ENGINEERING
+  </text>
+  <text x="80" y="268" fill="#fbfcfe" font-family="Instrument Serif, Georgia, serif" font-size="88">
+    Turning data into
+  </text>
+  <text x="80" y="356" fill="#4fd8e4" font-family="Instrument Serif, Georgia, serif" font-size="88">
+    decisions.
+  </text>
+  <text x="80" y="420" fill="#a8b2c4" font-size="26">Deepak Jaygopal Gond &#183; Mumbai, India</text>
+
+  <g font-family="JetBrains Mono, monospace">
+    <text x="80" y="520" fill="#ffc46b" font-size="40">40%</text>
+    <text x="80" y="550" fill="#8b95a7" font-size="17">less manual reporting</text>
+    <text x="300" y="520" fill="#ffc46b" font-size="40">35%</text>
+    <text x="300" y="550" fill="#8b95a7" font-size="17">collection efficiency</text>
+    <text x="520" y="520" fill="#ffc46b" font-size="40">30%</text>
+    <text x="520" y="550" fill="#8b95a7" font-size="17">on-time delivery</text>
+  </g>
+  <rect x="80" y="572" width="640" height="1" fill="#2b3444" />
+</svg>
