@@ -11,6 +11,11 @@
  *
  * The scene is purely decorative - the hero legend states the same five
  * stages in text, and the section works with WebGL unavailable.
+ *
+ * Every point in the scene - all four node stages, every packet and every
+ * trail sample - is drawn by one ShaderMaterial over two geometries. Size,
+ * colour and opacity are per-vertex attributes, which is what lets the
+ * stages share a draw call instead of needing one material each.
  */
 
 import * as THREE from 'three';
@@ -25,10 +30,88 @@ const STAGES = [
   { x: 15.0, count: 1, radius: 0.0, size: 1.80, mix: 1.00 },
 ];
 
-const COLOR_RAW = new THREE.Color('#4fd8e4');     /* signal teal  */
-const COLOR_INSIGHT = new THREE.Color('#ffc46b'); /* insight amber */
+/* Two palettes, because the scene cannot simply be recoloured for light.
+   Additive blending adds light to what is behind it, so on a bright ground
+   it washes out to nothing. Light mode switches to normal blending with
+   darker, denser colour and carries more opacity to compensate. */
+const PALETTES = {
+  dark: {
+    raw: '#4fd8e4',
+    insight: '#ffa160',
+    packet: '#e8fbff',
+    blending: THREE.AdditiveBlending,
+    edgeOpacity: 0.16,
+    glowOpacity: 0.55,
+    nodeBase: 0.55,
+    nodeGain: 0.40,
+  },
+  light: {
+    raw: '#005d5f',
+    insight: '#913600',
+    packet: '#0f3c46',
+    blending: THREE.NormalBlending,
+    edgeOpacity: 0.34,
+    glowOpacity: 0.12,
+    nodeBase: 0.52,
+    nodeGain: 0.34,
+  },
+};
 
-/** Soft round sprite, generated once - no texture file to download. */
+/* ---- Point shader -------------------------------------------------------
+   Replaces PointsMaterial for two reasons: per-vertex size (so all stages
+   share one draw call) and a depth fade that PointsMaterial cannot express.
+   The disc is procedural, so there is no texture to sample either. */
+
+const POINT_VERTEX = /* glsl */ `
+  attribute float aSize;
+  attribute vec3 aColor;
+  attribute float aAlpha;
+
+  uniform float uScale;     // drawing-buffer height / 2, in device pixels
+  uniform float uMaxSize;   // clamp so a near point cannot cost a huge quad
+  uniform float uFadeNear;
+  uniform float uFadeFar;
+
+  varying vec3 vColor;
+  varying float vAlpha;
+
+  void main() {
+    vColor = aColor;
+
+    vec4 mv = modelViewMatrix * vec4(position, 1.0);
+    float dist = max(-mv.z, 0.001);
+
+    // Depth fade: the far end of the lattice recedes instead of every node
+    // reading at one flat level. This is the main thing the built-in
+    // material could not do. Floored at half rather than reaching zero, so
+    // the raw-data cluster stays legible instead of dissolving.
+    // (smoothstep is undefined when edge0 > edge1, hence the inverted form.)
+    float fade = 1.0 - smoothstep(uFadeNear, uFadeFar, dist);
+    vAlpha = aAlpha * mix(0.5, 1.0, fade);
+
+    gl_PointSize = min(aSize * uScale / dist, uMaxSize);
+    gl_Position = projectionMatrix * mv;
+  }
+`;
+
+const POINT_FRAGMENT = /* glsl */ `
+  varying vec3 vColor;
+  varying float vAlpha;
+
+  void main() {
+    // Soft disc, matching the falloff of the sprite this replaces
+    float d = length(gl_PointCoord - vec2(0.5));
+    if (d > 0.5) discard;
+
+    float alpha = pow(smoothstep(0.5, 0.0, d), 1.7) * vAlpha;
+    if (alpha < 0.01) discard;
+
+    gl_FragColor = vec4(vColor, alpha);
+    #include <colorspace_fragment>
+  }
+`;
+
+/** Soft round sprite, generated once - still used by the insight glow. */
 function createDotTexture() {
   const size = 64;
   const canvas = document.createElement('canvas');
@@ -112,26 +195,30 @@ function buildLattice(quality, rand) {
   return { stages, edges, paths };
 }
 
-function stageColor(mix) {
-  return COLOR_RAW.clone().lerp(COLOR_INSIGHT, mix);
+function stageColor(mix, palette) {
+  return palette.rawColor.clone().lerp(palette.insightColor, mix);
 }
 
 /**
  * Create the scene.
  * @param {HTMLCanvasElement} canvas
  * @param {{reducedMotion: boolean}} options
- * @returns {{camera: THREE.PerspectiveCamera, root: THREE.Group, dispose: () => void} | null}
+ * @returns {{camera: THREE.PerspectiveCamera, root: THREE.Group, render: () => void, dispose: () => void} | null}
  *          null when WebGL is unavailable, so the CSS fallback stays visible.
  */
 export function createPipelineScene(canvas, options = {}) {
   const reducedMotion = Boolean(options.reducedMotion);
+  const palette = PALETTES[options.theme === 'light' ? 'light' : 'dark'];
+  palette.rawColor = new THREE.Color(palette.raw);
+  palette.insightColor = new THREE.Color(palette.insight);
   const isSmall = window.matchMedia('(max-width: 48rem)').matches;
   const isWeak = (navigator.hardwareConcurrency || 8) <= 4;
 
-  // Budget: fewer nodes, fewer packets and no antialiasing on small/weak devices.
+  // Budget: fewer nodes, fewer packets, shorter trails and no antialiasing
+  // on small/weak devices.
   const quality = isSmall || isWeak
-    ? { density: 0.45, packets: 70, dpr: 1.5, antialias: false }
-    : { density: 1, packets: 210, dpr: 2, antialias: true };
+    ? { density: 0.45, packets: 70, dpr: 1.5, antialias: false, trail: 1 }
+    : { density: 1, packets: 210, dpr: 2, antialias: true, trail: 3 };
 
   let renderer;
   try {
@@ -161,31 +248,70 @@ export function createPipelineScene(canvas, options = {}) {
   const dotTexture = createDotTexture();
   const disposables = [dotTexture];
 
-  /* ---- Nodes: one Points object per stage (size differs per stage) ---- */
-  stages.forEach((nodes, s) => {
-    const stage = STAGES[s];
-    if (s === stages.length - 1) return; // insight node is drawn as a mesh
+  /* ---- One material for every point in the scene ---- */
+  const pointMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      uScale: { value: 1 },
+      uMaxSize: { value: 140 },
+      uFadeNear: { value: 26 },
+      uFadeFar: { value: 72 },
+    },
+    vertexShader: POINT_VERTEX,
+    fragmentShader: POINT_FRAGMENT,
+    transparent: true,
+    depthWrite: false,
+    blending: palette.blending,
+  });
+  disposables.push(pointMaterial);
 
-    const positions = new Float32Array(nodes.length * 3);
-    nodes.forEach((n, i) => n.toArray(positions, i * 3));
+  /* gl_PointSize is in device pixels, so the scale factor has to track the
+     drawing buffer - including when adaptive resolution lowers the DPR. */
+  const bufferSize = new THREE.Vector2();
+  function syncPointScale() {
+    renderer.getDrawingBufferSize(bufferSize);
+    pointMaterial.uniforms.uScale.value = bufferSize.y * 0.5;
+  }
 
+  /** Pack positions/size/colour/alpha for a set of points into one geometry. */
+  function createPointGeometry(total) {
     const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(total * 3), 3));
+    geometry.setAttribute('aSize', new THREE.BufferAttribute(new Float32Array(total), 1));
+    geometry.setAttribute('aColor', new THREE.BufferAttribute(new Float32Array(total * 3), 3));
+    geometry.setAttribute('aAlpha', new THREE.BufferAttribute(new Float32Array(total), 1));
+    return geometry;
+  }
 
-    const material = new THREE.PointsMaterial({
-      size: stage.size,
-      map: dotTexture,
-      color: stageColor(stage.mix),
-      transparent: true,
-      opacity: 0.55 + stage.mix * 0.4,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      sizeAttenuation: true,
+  /* ---- Nodes: all four stages in a single draw call ----
+     Previously one Points object per stage, purely because PointsMaterial
+     carries size as a material uniform. Per-vertex size removes that. */
+  {
+    const drawn = stages.slice(0, -1);              // insight node is a mesh
+    const total = drawn.reduce((sum, nodes) => sum + nodes.length, 0);
+    const geometry = createPointGeometry(total);
+    const position = geometry.attributes.position.array;
+    const size = geometry.attributes.aSize.array;
+    const color = geometry.attributes.aColor.array;
+    const alpha = geometry.attributes.aAlpha.array;
+
+    let i = 0;
+    drawn.forEach((nodes, s) => {
+      const stage = STAGES[s];
+      const tint = stageColor(stage.mix, palette);
+      nodes.forEach((node) => {
+        node.toArray(position, i * 3);
+        size[i] = stage.size;
+        color[i * 3] = tint.r;
+        color[i * 3 + 1] = tint.g;
+        color[i * 3 + 2] = tint.b;
+        alpha[i] = palette.nodeBase + stage.mix * palette.nodeGain;
+        i += 1;
+      });
     });
 
-    root.add(new THREE.Points(geometry, material));
-    disposables.push(geometry, material);
-  });
+    root.add(new THREE.Points(geometry, pointMaterial));
+    disposables.push(geometry);
+  }
 
   /* ---- Edges: static lines, coloured by how far down the pipeline they sit ---- */
   {
@@ -194,8 +320,8 @@ export function createPipelineScene(canvas, options = {}) {
     edges.forEach(([from, to, s], i) => {
       from.toArray(positions, i * 6);
       to.toArray(positions, i * 6 + 3);
-      const a = stageColor(STAGES[s].mix);
-      const b = stageColor(STAGES[s + 1].mix);
+      const a = stageColor(STAGES[s].mix, palette);
+      const b = stageColor(STAGES[s + 1].mix, palette);
       colors.set([a.r, a.g, a.b, b.r, b.g, b.b], i * 6);
     });
 
@@ -206,9 +332,9 @@ export function createPipelineScene(canvas, options = {}) {
     const material = new THREE.LineBasicMaterial({
       vertexColors: true,
       transparent: true,
-      opacity: 0.16,
+      opacity: palette.edgeOpacity,
       depthWrite: false,
-      blending: THREE.AdditiveBlending,
+      blending: palette.blending,
     });
 
     root.add(new THREE.LineSegments(geometry, material));
@@ -216,32 +342,41 @@ export function createPipelineScene(canvas, options = {}) {
   }
 
   /* ---- Insight node: the single bright result at the end ---- */
+  const GLOW_SCALE = 6;
+  let insightMesh;
+  let insightGlow;
   {
     const geometry = new THREE.SphereGeometry(0.42, 24, 16);
-    const material = new THREE.MeshBasicMaterial({ color: COLOR_INSIGHT });
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(STAGES[4].x, 0, 0);
-    root.add(mesh);
+    const material = new THREE.MeshBasicMaterial({ color: palette.insightColor });
+    insightMesh = new THREE.Mesh(geometry, material);
+    insightMesh.position.set(STAGES[4].x, 0, 0);
+    root.add(insightMesh);
 
     const glowMaterial = new THREE.SpriteMaterial({
       map: dotTexture,
-      color: COLOR_INSIGHT,
+      color: palette.insightColor,
       transparent: true,
-      opacity: 0.55,
-      blending: THREE.AdditiveBlending,
+      opacity: palette.glowOpacity,
+      blending: palette.blending,
       depthWrite: false,
     });
-    const glow = new THREE.Sprite(glowMaterial);
-    glow.scale.setScalar(6);
-    glow.position.copy(mesh.position);
-    root.add(glow);
+    insightGlow = new THREE.Sprite(glowMaterial);
+    insightGlow.scale.setScalar(GLOW_SCALE);
+    insightGlow.position.copy(insightMesh.position);
+    root.add(insightGlow);
 
     disposables.push(geometry, material, glowMaterial);
   }
 
-  /* ---- Packets: the data actually moving through the pipeline ---- */
+  /* ---- Packets: the data actually moving through the pipeline ----
+     Each packet draws a head plus a few trail samples. A packet's position
+     is a pure function of its progress, so the trail is just the same path
+     evaluated slightly earlier - no history buffer to keep, and it all
+     stays in the one geometry and the one draw call. */
+  const TRAIL = quality.trail;
+  const PER_PACKET = TRAIL + 1;
+  const TRAIL_STEP = 0.028;            // in path segments, ~0.2 world units
   const packetCount = paths.length;
-  const packetPositions = new Float32Array(packetCount * 3);
   const packetProgress = new Float32Array(packetCount);
   const packetSpeed = new Float32Array(packetCount);
   const SEGMENTS = STAGES.length - 1;
@@ -251,38 +386,63 @@ export function createPipelineScene(canvas, options = {}) {
     packetSpeed[i] = 0.32 + rand() * 0.42;
   }
 
-  const packetGeometry = new THREE.BufferGeometry();
-  packetGeometry.setAttribute('position', new THREE.BufferAttribute(packetPositions, 3));
-  const packetMaterial = new THREE.PointsMaterial({
-    size: 0.4,
-    map: dotTexture,
-    color: new THREE.Color('#e8fbff'),
-    transparent: true,
-    opacity: 0.9,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
-    sizeAttenuation: true,
-  });
-  root.add(new THREE.Points(packetGeometry, packetMaterial));
-  disposables.push(packetGeometry, packetMaterial);
+  const packetGeometry = createPointGeometry(packetCount * PER_PACKET);
+  const packetPositions = packetGeometry.attributes.position.array;
+  {
+    const size = packetGeometry.attributes.aSize.array;
+    const color = packetGeometry.attributes.aColor.array;
+    const alpha = packetGeometry.attributes.aAlpha.array;
+    const tint = new THREE.Color();
+    const packetColor = new THREE.Color(palette.packet);
 
-  /** Place every packet at its current point along its path. */
+    for (let i = 0; i < packetCount; i++) {
+      for (let k = 0; k <= TRAIL; k++) {
+        const v = i * PER_PACKET + k;
+        const decay = 1 - k / (TRAIL + 1);
+        // The head is near-white; the tail cools back toward signal teal
+        tint.copy(packetColor).lerp(palette.rawColor, k / (TRAIL + 1));
+        size[v] = 0.4 * (0.45 + decay * 0.55);
+        alpha[v] = 0.9 * decay * decay;
+        color[v * 3] = tint.r;
+        color[v * 3 + 1] = tint.g;
+        color[v * 3 + 2] = tint.b;
+      }
+    }
+  }
+
+  /* Positions change every frame, so the bounding sphere Three would derive
+     once from the initial buffer goes stale and the whole cloud can be
+     culled as the scroll scrub moves the camera. Pin one that covers the
+     lattice instead of disabling culling outright. */
+  packetGeometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), 26);
+  packetGeometry.computeBoundingSphere = () => {};
+
+  root.add(new THREE.Points(packetGeometry, pointMaterial));
+  disposables.push(packetGeometry);
+
+  /** Place every packet, and its trail, at its current point along its path. */
   function updatePackets(delta) {
     for (let i = 0; i < packetCount; i++) {
       packetProgress[i] += delta * packetSpeed[i];
       if (packetProgress[i] >= SEGMENTS) packetProgress[i] -= SEGMENTS;
 
-      const t = packetProgress[i];
-      const segment = Math.min(Math.floor(t), SEGMENTS - 1);
-      const local = t - segment;
+      const head = packetProgress[i];
       const path = paths[i];
-      const from = path[segment];
-      const to = path[segment + 1];
 
-      const o = i * 3;
-      packetPositions[o] = from.x + (to.x - from.x) * local;
-      packetPositions[o + 1] = from.y + (to.y - from.y) * local;
-      packetPositions[o + 2] = from.z + (to.z - from.z) * local;
+      for (let k = 0; k <= TRAIL; k++) {
+        // Clamped rather than wrapped: a wrapped trail would streak from the
+        // insight node back to the raw cluster on every loop.
+        const t = Math.max(0, head - k * TRAIL_STEP);
+        const segment = Math.min(Math.floor(t), SEGMENTS - 1);
+        const local = t - segment;
+        const from = path[segment];
+        const to = path[segment + 1];
+
+        const o = (i * PER_PACKET + k) * 3;
+        packetPositions[o] = from.x + (to.x - from.x) * local;
+        packetPositions[o + 1] = from.y + (to.y - from.y) * local;
+        packetPositions[o + 2] = from.z + (to.z - from.z) * local;
+      }
     }
     packetGeometry.attributes.position.needsUpdate = true;
   }
@@ -296,6 +456,7 @@ export function createPipelineScene(canvas, options = {}) {
     // Pull the camera back on narrow screens so the whole pipeline still fits
     camera.position.z = clientWidth < 700 ? 42 : 30;
     camera.updateProjectionMatrix();
+    syncPointScale();
   }
 
   const resizeObserver = new ResizeObserver(resize);
@@ -344,21 +505,32 @@ export function createPipelineScene(canvas, options = {}) {
     slowFrames = 0;
     dprTier += 1;
     renderer.setPixelRatio(Math.max(1, baseDpr * Math.pow(0.75, dprTier)));
+    // The drawing buffer just changed, so point sizes have to be rescaled
+    syncPointScale();
   }
 
   /* ---- Render loop: only runs while visible ---- */
   const clock = new THREE.Clock();
   let frame = 0;
   let onScreen = true;
+  let elapsed = 0;
 
   function render() {
     renderer.render(scene, camera);
+  }
+
+  /** The one result at the end of the pipeline breathes, very slightly. */
+  function pulseInsight() {
+    const breath = Math.sin(elapsed * 1.5) * 0.05;
+    insightMesh.scale.setScalar(1 + breath);
+    insightGlow.scale.setScalar(GLOW_SCALE * (1 + breath * 1.6));
   }
 
   function tick() {
     frame = requestAnimationFrame(tick);
     // Clamp delta so a backgrounded tab does not fast-forward the flow
     const delta = Math.min(clock.getDelta(), 0.05);
+    elapsed += delta;
 
     const follow = 1 - Math.exp(-POINTER_RATE * delta);
     eased.x += (pointer.x - eased.x) * follow;
@@ -367,6 +539,7 @@ export function createPipelineScene(canvas, options = {}) {
     root.rotation.x = basePitch - eased.y * 0.08;
 
     updatePackets(delta);
+    pulseInsight();
     render();
     adaptResolution(delta);
   }

@@ -40,7 +40,7 @@ export const hero = {
     'supply chain, sales and finance.',
   meta: [
     { icon: 'pin', text: 'Mumbai, Maharashtra, India' },
-    { icon: 'brief', text: 'Open to Data Analyst & Data Engineering roles' },
+    { icon: 'brief', text: 'Open to Data Analyst & Data Engineering roles \u00b7 Remote / Hybrid' },
     { icon: 'cap', text: 'M.Sc. Computer Science \u00b7 CGPA 8.84' },
   ],
   // Named in text so the 3D scene never carries meaning on its own
@@ -343,6 +343,7 @@ export const contact = {
   lede:
     'If you have operational data that should be telling you more than it currently ' +
     'does, I would be glad to talk it through.',
+  responseNote: 'Usually replies within 24 hours',
   links: [
     { icon: 'mail', label: profile.email, href: `mailto:${profile.email}` },
     { icon: 'github', label: 'github.com/frienf', href: profile.links.github },

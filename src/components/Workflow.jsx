@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { workflow } from '../data/profile.js';
 import { SectionHead } from './SectionHead.jsx';
 import { TagRow } from './Tag.jsx';
+import { StageGlyph } from './StageGlyph.jsx';
 
 const STEP = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
 
@@ -83,7 +84,10 @@ export function Workflow() {
                 hidden={i !== selected}
               >
                 <div className="workflow__panel-head">
-                  <h3 className="workflow__panel-title">{step.name}</h3>
+                  <div className="workflow__panel-heading">
+                    <StageGlyph step={step.id} />
+                    <h3 className="workflow__panel-title">{step.name}</h3>
+                  </div>
                   <p className="workflow__panel-stage">{step.stage}</p>
                 </div>
                 <p className="workflow__panel-body">{step.body}</p>

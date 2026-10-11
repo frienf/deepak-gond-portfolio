@@ -8,9 +8,9 @@ import { usePipelineScene } from '../hooks/usePipelineScene.js';
  *
  * @param {(pipeline: object|null) => void} onReady  hands the scene handles up
  */
-export function HeroCanvas({ onReady }) {
+export function HeroCanvas({ onReady, theme }) {
   const canvasRef = useRef(null);
-  const { pipeline, ready } = usePipelineScene(canvasRef);
+  const { pipeline, ready } = usePipelineScene(canvasRef, theme);
 
   useEffect(() => {
     document.documentElement.classList.toggle('webgl-ready', ready);
@@ -20,7 +20,11 @@ export function HeroCanvas({ onReady }) {
   return (
     <div className="hero__canvas-wrap" aria-hidden="true">
       <div className="hero__fallback" />
-      <canvas className="hero__canvas" id="pipeline-canvas" ref={canvasRef} />
+      {/* Keyed on the theme so React mounts a fresh element when it flips.
+          dispose() ends with forceContextLoss(), which retires that canvas's
+          WebGL context for good - a rebuilt scene cannot get a new context
+          from the same element, it would only ever receive the lost one. */}
+      <canvas key={theme} className="hero__canvas" id="pipeline-canvas" ref={canvasRef} />
     </div>
   );
 }

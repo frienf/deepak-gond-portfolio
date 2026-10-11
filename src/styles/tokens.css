@@ -1,41 +1,131 @@
 /* ============================================================
    Design tokens - the single source of visual truth.
-   Dark, ink-blue editorial base + two accents:
-   teal = measurement/signal, amber = insight/outcome.
+
+   Two themes. Dark is the default; [data-theme="light"] on <html>
+   swaps the ramp. Components never reference a raw colour - they use
+   the semantic names below, which is what lets one attribute flip the
+   whole site.
+
+   The dark base is a *warm* charcoal (hue 70), not the blue-black it
+   started as. Cold blue neutrals plus a cyan accent read clinical; the
+   warmth is most of what makes this feel friendly rather than severe.
    ============================================================ */
 
 :root {
-  /* --- Color: neutrals (ink-blue, perceptually even via oklch) --- */
-  --ink-900: oklch(15% 0.018 255);   /* page background          */
-  --ink-850: oklch(18% 0.018 255);   /* raised background        */
-  --ink-800: oklch(21% 0.019 255);   /* card surface             */
-  --ink-700: oklch(27% 0.020 255);   /* card surface, hover      */
-  --ink-600: oklch(38% 0.018 255);   /* hairlines, dividers      */
-  --ink-400: oklch(69% 0.013 255);   /* faint labels   (7.0:1)  */
-  --ink-300: oklch(72% 0.012 255);   /* secondary text  (7.2:1)  */
-  --ink-100: oklch(94% 0.006 255);   /* primary text   (15.6:1)  */
-  --ink-000: oklch(99% 0.002 255);   /* headings                 */
+  /* ---------- Dark theme (default) ---------- */
 
-  /* --- Color: accents --- */
-  --signal: oklch(80% 0.125 195);         /* teal: data, metrics, links */
+  /* Surfaces: a wider ladder than before, so cards lift off the page */
+  --bg: oklch(16% 0.014 70);
+  --surface: oklch(23% 0.015 70);
+  --surface-raised: oklch(27% 0.016 70);
+
+  /* Translucent surfaces, derived from the page colour */
+  --veil: oklch(16% 0.014 70 / 0.82);        /* sticky bars, over content */
+  --veil-strong: oklch(16% 0.014 70 / 0.92);
+  --well: oklch(13% 0.013 70 / 0.55);        /* recessed panels, chips    */
+  --well-strong: oklch(13% 0.013 70 / 0.8);
+  --well-soft: oklch(13% 0.013 70 / 0.35);
+
+  /* Card gradients */
+  --card-from: oklch(23% 0.015 70 / 0.9);
+  --card-to: oklch(20% 0.014 70 / 0.5);
+
+  --line: oklch(44% 0.014 70 / 0.5);
+  --line-strong: oklch(52% 0.015 70 / 0.7);
+
+  --text: oklch(95% 0.009 70);
+  --text-muted: oklch(76% 0.013 70);
+  --text-faint: oklch(71% 0.013 70);
+  --heading: oklch(99% 0.005 70);
+
+  /* ---------- Accents ---------- */
+  --signal: oklch(80% 0.125 195);            /* teal: data, links, state  */
+  /* Text on a signal-filled surface. Flips with the theme, because the
+     accent is light on dark and dark on light. */
+  --on-signal: oklch(18% 0.02 70);
   --signal-dim: oklch(62% 0.105 195);
+  --signal-soft: oklch(80% 0.125 195 / 0.12);
+  --signal-edge: oklch(80% 0.125 195 / 0.38);
   --signal-glow: oklch(80% 0.125 195 / 0.14);
-  --insight: oklch(82% 0.135 78);         /* amber: outcomes, highlights */
-  --insight-dim: oklch(66% 0.120 78);
-  --insight-glow: oklch(82% 0.135 78 / 0.14);
 
-  /* --- Semantic --- */
-  --bg: var(--ink-900);
-  --bg-raised: var(--ink-850);
-  --surface: var(--ink-800);
-  --surface-hover: var(--ink-700);
-  --line: oklch(38% 0.018 255 / 0.55);
-  --line-strong: oklch(45% 0.020 255 / 0.8);
-  --text: var(--ink-100);
-  --text-muted: var(--ink-300);
-  --text-faint: var(--ink-400);
-  --heading: var(--ink-000);
+  --insight: oklch(80% 0.145 52);            /* apricot: outcomes         */
+  --insight-dim: oklch(64% 0.130 52);
+  --insight-soft: oklch(80% 0.145 52 / 0.12);
+  --insight-edge: oklch(80% 0.145 52 / 0.32);
+  --insight-glow: oklch(80% 0.145 52 / 0.14);
 
+  /* ---------- Interaction ----------
+     Hovers are tinted with the accent rather than washed with white.
+     A 3% white veil is invisible; a tinted one tells you the thing is
+     alive and which colour family it belongs to. */
+  --hover-surface: oklch(80% 0.125 195 / 0.10);
+  --hover-border: oklch(80% 0.125 195 / 0.45);
+  --press-surface: oklch(80% 0.125 195 / 0.16);
+  --hover-lift: 0 0 12px 0 oklch(0% 0 0 / 0.30);
+
+  /* ---------- Hero scrim ---------- */
+  --scrim-from: oklch(16% 0.014 70);
+  --scrim-mid: oklch(16% 0.014 70 / 0.72);
+}
+
+:root[data-theme="light"] {
+  /* ---------- Light theme ----------
+     Warm off-white page with cards nearly white, so they float rather
+     than being outlined. Accents darken to hold contrast on a bright
+     ground - the same hues, re-pitched. */
+  --bg: oklch(97% 0.009 80);
+  --surface: oklch(99.4% 0.004 80);
+  --surface-raised: oklch(100% 0 0);
+
+  --veil: oklch(97% 0.009 80 / 0.84);
+  --veil-strong: oklch(97% 0.009 80 / 0.93);
+  --well: oklch(93.5% 0.012 80 / 0.7);
+  --well-strong: oklch(93.5% 0.012 80 / 0.92);
+  --well-soft: oklch(93.5% 0.012 80 / 0.45);
+
+  --card-from: oklch(99.4% 0.004 80 / 0.95);
+  --card-to: oklch(97.6% 0.007 80 / 0.75);
+
+  --line: oklch(55% 0.02 75 / 0.26);
+  --line-strong: oklch(45% 0.02 75 / 0.38);
+
+  /* Light holds the same AAA floor as dark (7:1 for normal text), which
+     pins these lightness values - they are solved, not chosen. Muted is
+     pushed darker than it would otherwise be so a gap survives above
+     faint once faint is dragged down to clear 7:1. */
+  --text: oklch(34% 0.018 70);
+  --text-muted: oklch(41% 0.019 70);
+  --text-faint: oklch(44.5% 0.019 70);
+  --heading: oklch(23% 0.023 70);
+
+  --signal: oklch(41.5% 0.115 195);
+  --on-signal: oklch(99% 0.003 80);
+  --signal-dim: oklch(34% 0.100 195);
+  --signal-soft: oklch(41.5% 0.115 195 / 0.10);
+  --signal-edge: oklch(41.5% 0.115 195 / 0.35);
+  --signal-glow: oklch(41.5% 0.115 195 / 0.12);
+
+  --insight: oklch(45.5% 0.145 52);
+  --insight-dim: oklch(38% 0.130 52);
+  --insight-soft: oklch(45.5% 0.145 52 / 0.10);
+  --insight-edge: oklch(45.5% 0.145 52 / 0.30);
+  --insight-glow: oklch(45.5% 0.145 52 / 0.12);
+
+  --hover-surface: oklch(41.5% 0.115 195 / 0.08);
+  --hover-border: oklch(41.5% 0.115 195 / 0.42);
+  --press-surface: oklch(41.5% 0.115 195 / 0.14);
+  --hover-lift: 0 0 12px 0 oklch(45% 0.02 75 / 0.14);
+
+  --scrim-from: oklch(97% 0.009 80);
+  --scrim-mid: oklch(97% 0.009 80 / 0.74);
+
+  color-scheme: light;
+}
+
+:root { color-scheme: dark; }
+:root[data-theme="light"] { color-scheme: light; }
+
+:root {
   /* --- Type families --- */
   --font-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
@@ -69,9 +159,14 @@
   --container: 76rem;
   --container-narrow: 54rem;
   --gutter: clamp(1.25rem, 4vw, 3.5rem);
-  --radius-sm: 6px;
-  --radius: 12px;
-  --radius-lg: 18px;
+  /* Pill-and-soft-rect: nothing sharp. Large cards sit at 40px, mid
+     containers at 20px, and buttons stay fully rounded. */
+  --radius-sm: 10px;
+  --radius: 20px;
+  --radius-lg: 40px;
+  /* Card padding scales to 40px on desktop but stays humane at 375px,
+     where a flat 40px would eat a third of the width. */
+  --card-pad: clamp(1.25rem, 0.8rem + 2.2vw, 2.5rem);
 
   /* --- Elevation (subtle: depth comes from hairlines, not drop shadows) --- */
   --shadow-1: 0 1px 2px oklch(0% 0 0 / 0.3);

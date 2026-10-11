@@ -4,6 +4,8 @@
  * plotting grid so it reads as a detail in a frame. Decorative only.
  */
 
+import { useDrawOn } from '../hooks/useDrawOn.js';
+
 const signal = 'var(--signal)';
 const insight = 'var(--insight)';
 const faint = 'var(--line-strong)';
@@ -110,13 +112,16 @@ function Gesture() {
 const MOTIFS = { equation: Equation, grid: Grid, gesture: Gesture };
 
 export function ProjectMotif({ motif }) {
+  // Slower and looser than a sparkline: this is a sketch being made, not a
+  // measurement landing.
+  const ref = useDrawOn({ duration: 1100, stagger: 55 });
   const Shape = MOTIFS[motif];
   if (!Shape) return null;
 
   // Drawn on a 192x108 grid, presented on 384x216: the sketch keeps its
   // proportions without ballooning when a card goes full width.
   return (
-    <svg viewBox="0 0 384 216" preserveAspectRatio="xMidYMid slice" focusable="false">
+    <svg ref={ref} viewBox="0 0 384 216" preserveAspectRatio="xMidYMid slice" focusable="false">
       <g transform="scale(2)">
         <Frame id={`motif-grid-${motif}`} />
         <Shape />

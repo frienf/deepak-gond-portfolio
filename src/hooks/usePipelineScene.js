@@ -12,7 +12,7 @@ import { useReducedMotion } from './useReducedMotion.js';
  * @param {React.RefObject<HTMLCanvasElement>} canvasRef
  * @returns {{pipeline: object|null, ready: boolean}}
  */
-export function usePipelineScene(canvasRef) {
+export function usePipelineScene(canvasRef, theme = 'dark') {
   const reducedMotion = useReducedMotion();
   const [pipeline, setPipeline] = useState(null);
 
@@ -27,7 +27,7 @@ export function usePipelineScene(canvasRef) {
       .then(({ createPipelineScene }) => {
         // StrictMode may unmount before the import resolves
         if (cancelled) return;
-        scene = createPipelineScene(canvas, { reducedMotion });
+        scene = createPipelineScene(canvas, { reducedMotion, theme });
         if (scene) setPipeline(scene);
       })
       .catch((error) => {
@@ -39,7 +39,7 @@ export function usePipelineScene(canvasRef) {
       if (scene) scene.dispose();
       setPipeline(null);
     };
-  }, [canvasRef, reducedMotion]);
+  }, [canvasRef, reducedMotion, theme]);
 
   return { pipeline, ready: Boolean(pipeline) };
 }
