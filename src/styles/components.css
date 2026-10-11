@@ -697,7 +697,7 @@
 .project__preview {
   position: relative;
   aspect-ratio: 16 / 9;
-  max-height: 15rem;
+  max-height: 18rem;
   border-bottom: 1px solid var(--line);
   background: var(--well-strong);
   overflow: hidden;
@@ -707,6 +707,21 @@
   inset: 0;
   width: 100%;
   height: 100%;
+}
+
+/* The system diagrams are labelled, so they need width to stay readable:
+   at 333px the 9px type renders near 6px. Below 64rem the diagram stands
+   down and the preview collapses to a slim band carrying just the outcome
+   badge, rather than leaving a tall empty panel. Everything the diagram
+   names is also in the card's case study. */
+@media (max-width: 63.999rem) {
+  .project__preview {
+    aspect-ratio: auto;
+    height: 4.5rem;
+    max-height: none;
+  }
+  .project__preview svg { display: none; }
+  .project__outcome { bottom: 50%; transform: translateY(50%); }
 }
 .project__outcome {
   position: absolute;
