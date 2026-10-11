@@ -25,6 +25,7 @@ export const nav = [
   { id: 'how-i-work', label: 'How I work' },
   { id: 'experience', label: 'Experience' },
   { id: 'projects', label: 'Projects' },
+  { id: 'systems', label: 'Systems' },
   { id: 'skills', label: 'Skills' },
   { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact' },
@@ -257,6 +258,53 @@ export const projects = [
     result: '35 hand gestures (A\u2013Z, 1\u20139 and space) translated in real time.',
     tags: ['Python', 'TensorFlow', 'OpenCV', 'CNN'],
     accent: 2,
+  },
+];
+
+/**
+ * Pipeline steps behind each project. These are the text form of the
+ * system diagrams - shown as a list on small screens, where a labelled
+ * diagram cannot stay legible, and read by screen readers everywhere.
+ */
+export const systems = [
+  {
+    id: 'mathsketch',
+    motif: 'equation',
+    title: 'MathSketch',
+    summary: 'Handwriting in, solved LaTeX out.',
+    steps: [
+      'Canvas sketch',
+      'Base64 image',
+      'FastAPI pre-processing',
+      'OpenRouter vision + MathJax renderer',
+      'LaTeX and solution',
+    ],
+  },
+  {
+    id: 'sudoku',
+    motif: 'grid',
+    title: 'Sudoku Solver',
+    summary: 'A photo of a puzzle, read and solved.',
+    steps: [
+      'Puzzle photo',
+      'OpenCV: grid detection, cell extraction, warp',
+      'TensorFlow digit classifier',
+      'Backtracking solver',
+      'Solved grid in Streamlit',
+    ],
+  },
+  {
+    id: 'sign-language',
+    motif: 'gesture',
+    title: 'Sign Language Translator',
+    summary: 'Finger-spelling captioned as you sign.',
+    steps: [
+      'Webcam frame',
+      'OpenCV pre-processing: skin and contour',
+      'Custom CNN across 35 gestures',
+      'Real-time inference',
+      'Live text caption',
+    ],
   },
 ];
 

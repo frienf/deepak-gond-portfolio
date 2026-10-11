@@ -29,6 +29,7 @@
   align-items: center;
   gap: 0.625rem;
   min-height: 2.75rem;
+  white-space: nowrap;
   font-weight: 600;
   font-size: var(--fs-sm);
   color: var(--heading);
@@ -57,11 +58,13 @@
 .site-nav__list {
   display: flex;
   align-items: center;
-  gap: clamp(0.25rem, 1.2vw, 1rem);
+  /* Tight: eight uppercase mono labels plus the brand and the actions
+     only just clear 1280px. */
+  gap: clamp(0.125rem, 0.5vw, 0.5rem);
 }
 .site-nav__link {
   display: block;
-  padding: 0.5rem 0.625rem;
+  padding: 0.5rem 0.4375rem;
   /* Mono for every functional string - nav included. The serif announces,
      the mono instructs. */
   font-family: var(--font-mono);
@@ -697,7 +700,7 @@
 .project__preview {
   position: relative;
   aspect-ratio: 16 / 9;
-  max-height: 18rem;
+  max-height: 15rem;
   border-bottom: 1px solid var(--line);
   background: var(--well-strong);
   overflow: hidden;
@@ -707,21 +710,6 @@
   inset: 0;
   width: 100%;
   height: 100%;
-}
-
-/* The system diagrams are labelled, so they need width to stay readable:
-   at 333px the 9px type renders near 6px. Below 64rem the diagram stands
-   down and the preview collapses to a slim band carrying just the outcome
-   badge, rather than leaving a tall empty panel. Everything the diagram
-   names is also in the card's case study. */
-@media (max-width: 63.999rem) {
-  .project__preview {
-    aspect-ratio: auto;
-    height: 4.5rem;
-    max-height: none;
-  }
-  .project__preview svg { display: none; }
-  .project__outcome { bottom: 50%; transform: translateY(50%); }
 }
 .project__outcome {
   position: absolute;
@@ -1147,3 +1135,68 @@
   color: var(--signal);
 }
 .theme-toggle svg { width: 1.125rem; height: 1.125rem; }
+
+/* ======================= Systems ======================= */
+
+.systems {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.system {
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--card-pad);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, var(--card-from), var(--card-to));
+}
+.system__head { display: grid; gap: 0.2rem; }
+.system__title { font-size: var(--fs-md); }
+.system__summary { font-size: var(--fs-sm); color: var(--text-muted); }
+
+.system__svg { display: none; }
+
+/* The steps are the diagram in words. They lead on small screens, where a
+   labelled diagram cannot stay legible, and stay available to screen
+   readers once the diagram takes over. */
+/* Vertical, and without connector rules: on a narrow screen a long step
+   wraps and any trailing connector dangles at the far edge. The numbers
+   carry the sequence on their own. */
+.system__steps {
+  display: grid;
+  gap: 0.45rem;
+  counter-reset: step;
+}
+.system__steps li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.625rem;
+  align-items: start;
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+.system__steps li::before {
+  counter-increment: step;
+  content: counter(step, decimal-leading-zero);
+  color: var(--signal);
+}
+.system__steps li:last-child { color: var(--insight); }
+.system__steps li:last-child::before { color: var(--insight); }
+
+@media (min-width: 64rem) {
+  .systems { gap: var(--space-xl); }
+  .system__svg { display: block; width: 100%; height: auto; overflow: visible; }
+  /* Diagram shown, so the list becomes the accessible equivalent only */
+  .system__steps {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

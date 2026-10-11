@@ -1,138 +1,110 @@
 /**
- * Project system diagrams.
- *
- * One per project, each showing how the thing is actually wired: inputs on
- * the left, processing stages through the middle, and the single result on
- * the right. Teal carries every processing stage; apricot is reserved for
- * the finished output, exactly as it is everywhere else on the site.
- *
- * Drawn on a 520x293 grid (16:9) with `meet`, so nothing is ever cropped -
- * a labelled node clipped at the card edge is worse than a little
- * letterboxing. Decorative: the container is aria-hidden and every name
- * here also appears in the card's case-study text.
+ * Generated geometric sketch of what each project does - deliberately
+ * abstract rather than a fake screenshot. The artwork sits inset inside a
+ * plotting grid so it reads as a detail in a frame. Decorative only.
  */
 
 import { useDrawOn } from '../hooks/useDrawOn.js';
 
-const teal = 'var(--signal)';
-const apricot = 'var(--insight)';
-const hair = 'var(--line-strong)';
+const signal = 'var(--signal)';
+const insight = 'var(--insight)';
+const faint = 'var(--line-strong)';
 
-const stroke = { fill: 'none', strokeLinecap: 'round', strokeLinejoin: 'round' };
-const mono = { fontFamily: 'var(--font-mono)', letterSpacing: '0.06em' };
-
-/** Rounded node holding one or two short lines. */
-function Node({ x, cy, w, h = 40, lines, tone = teal, size = 9 }) {
-  const y = cy - h / 2;
-  const first = lines.length === 1 ? cy + size / 2 - 1 : cy - 2;
+/** Shared plotting grid. The pattern id is per-card: three copies of one id
+ *  in a document would be invalid. */
+function Frame({ id }) {
   return (
     <>
-      <rect x={x} y={y} width={w} height={h} rx={Math.min(16, h / 2)}
-        {...stroke} style={{ stroke: tone }} strokeWidth="1.1" />
-      {lines.map((text, i) => (
-        <text key={text} x={x + w / 2} y={first + i * (size + 3)} fontSize={size}
-          textAnchor="middle" style={{ ...mono, fill: 'var(--text-muted)' }}>{text}</text>
-      ))}
+      <defs>
+        <pattern id={id} width="16" height="16" patternUnits="userSpaceOnUse">
+          <path d="M16 0H0v16" fill="none" style={{ stroke: faint }} strokeWidth="0.5" opacity="0.45" />
+        </pattern>
+      </defs>
+      <rect width="192" height="108" fill={`url(#${id})`} />
     </>
   );
 }
 
-/** Hairline connector with a small chevron head. */
-function Arrow({ x1, x2, y, tone = teal }) {
-  return (
-    <>
-      <path d={`M${x1} ${y}H${x2 - 4}`} {...stroke} style={{ stroke: tone }} strokeWidth="1" opacity="0.6" />
-      <path d={`M${x2 - 8} ${y - 3.5}L${x2 - 3} ${y}L${x2 - 8} ${y + 3.5}`}
-        {...stroke} style={{ stroke: tone }} strokeWidth="1" opacity="0.6" />
-    </>
-  );
-}
-
-/** The one apricot node, with its soft halo. */
-function Result({ x, cy, w, lines }) {
-  return (
-    <>
-      <circle cx={x + w / 2} cy={cy} r="42" style={{ fill: apricot }} opacity="0.10" />
-      <Node x={x} cy={cy} w={w} h={46} lines={lines} tone={apricot} />
-    </>
-  );
-}
-
-/** MathSketch: a sketch becomes an image, is read, and comes back solved. */
+/** MathSketch: a sketched stroke on the left resolving into a plot. */
 function Equation() {
   return (
     <>
-      <Node x={22} cy={146} w={78} lines={['CANVAS', 'SKETCH']} tone={hair} />
-      <Arrow x1={100} x2={116} y={146} />
-      <Node x={116} cy={146} w={78} lines={['BASE64', 'IMAGE']} tone={hair} />
-      <Arrow x1={194} x2={210} y={146} />
-
-      <path d="M252 104 294 146 252 188 210 146Z" {...stroke} style={{ stroke: teal }} strokeWidth="1.2" />
-      <text x="252" y="143" fontSize="9" textAnchor="middle" style={{ ...mono, fill: teal }}>FASTAPI</text>
-      <text x="252" y="156" fontSize="8" textAnchor="middle" style={{ ...mono, fill: 'var(--text-faint)' }}>PRE-PROC</text>
-
-      <path d="M252 104 C 252 80 280 78 310 78" {...stroke} style={{ stroke: teal }} strokeWidth="1" opacity="0.6" />
-      <path d="M252 188 C 252 212 280 214 310 214" {...stroke} style={{ stroke: teal }} strokeWidth="1" opacity="0.6" />
-      <Node x={310} cy={78} w={92} lines={['OPENROUTER', 'VISION']} />
-      <Node x={310} cy={214} w={92} lines={['MATHJAX', 'RENDER']} />
-
-      <path d="M402 78 C 420 78 424 118 430 134" {...stroke} style={{ stroke: apricot }} strokeWidth="1" opacity="0.55" />
-      <path d="M402 214 C 420 214 424 174 430 158" {...stroke} style={{ stroke: apricot }} strokeWidth="1" opacity="0.55" />
-      <Result x={430} cy={146} w={76} lines={['LATEX +', 'SOLUTION']} />
+      <g style={{ stroke: faint }} strokeWidth="0.8" opacity="0.9" fill="none">
+        <path d="M22 86V26M22 86h148" />
+        <path d="M44 86v3M66 86v3M88 86v3M110 86v3M132 86v3M154 86v3" />
+      </g>
+      <path
+        d="M30 74c10 0 12-32 22-32s11 20 21 20"
+        fill="none" style={{ stroke: signal }} strokeWidth="1"
+        strokeLinecap="round" strokeDasharray="2 3" opacity="0.75"
+      />
+      <path
+        d="M86 68c12 0 10-30 24-30s14 18 26 18 14-12 24-12"
+        fill="none" style={{ stroke: insight }} strokeWidth="1.1" strokeLinecap="round"
+      />
+      <g style={{ fill: signal }}>
+        <circle cx="52" cy="42" r="1.5" /><circle cx="73" cy="62" r="1.5" /><circle cx="86" cy="68" r="1.5" />
+      </g>
+      <g style={{ fill: insight }}>
+        <circle cx="110" cy="38" r="1.8" /><circle cx="136" cy="56" r="1.8" /><circle cx="160" cy="44" r="1.8" />
+      </g>
+      <text x="30" y="24" style={{ fill: signal }} fontFamily="monospace" fontSize="7" opacity="0.8" letterSpacing="1">SKETCH</text>
+      <text x="122" y="24" style={{ fill: insight }} fontFamily="monospace" fontSize="7" opacity="0.8" letterSpacing="1">f(x) = ?</text>
     </>
   );
 }
 
-/** Sudoku: a photo is read by OpenCV, classified, solved. */
+/** Sudoku: a detected 9x9 grid with recognised cells lit up. */
 function Grid() {
-  const subs = [['GRID DETECT', 126], ['CELL EXTRACT', 154], ['WARP', 182]];
   return (
     <>
-      <Node x={20} cy={146} w={78} lines={['PUZZLE', 'PHOTO']} tone={hair} />
-      <Arrow x1={98} x2={112} y={146} />
-
-      <rect x="112" y="86" width="124" height="120" rx="16"
-        {...stroke} style={{ stroke: teal }} strokeWidth="1.2" />
-      <text x="174" y="104" fontSize="9" textAnchor="middle" style={{ ...mono, fill: teal }}>OPENCV</text>
-      {subs.map(([text, cy]) => (
-        <g key={text}>
-          <rect x="122" y={cy - 11} width="104" height="22" rx="11"
-            {...stroke} style={{ stroke: hair }} strokeWidth="1" />
-          <text x="174" y={cy + 3} fontSize="8" textAnchor="middle"
-            style={{ ...mono, fill: 'var(--text-faint)' }}>{text}</text>
+      <g transform="translate(69 21)">
+        <rect width="54" height="63" fill="none" style={{ stroke: signal }} strokeWidth="0.9" rx="1" />
+        <g style={{ stroke: faint }} strokeWidth="0.5" opacity="0.9">
+          <path d="M18 0v63M36 0v63M0 21h54M0 42h54" />
         </g>
-      ))}
-
-      <Arrow x1={236} x2={250} y={146} />
-      <Node x={250} cy={146} w={80} lines={['TENSORFLOW', 'CLASSIFIER']} />
-      <Arrow x1={330} x2={344} y={146} />
-      <Node x={344} cy={146} w={76} lines={['BACKTRACK', 'SOLVER']} />
-      <Arrow x1={420} x2={432} y={146} tone={apricot} />
-      <Result x={432} cy={146} w={74} lines={['SOLVED GRID', 'STREAMLIT']} />
+        <g style={{ stroke: faint }} strokeWidth="0.3" opacity="0.5">
+          <path d="M6 0v63M12 0v63M24 0v63M30 0v63M42 0v63M48 0v63M0 7h54M0 14h54M0 28h54M0 35h54M0 49h54M0 56h54" />
+        </g>
+        <g style={{ fill: signal }} opacity="0.3">
+          <rect x="0.5" y="0.5" width="17" height="20" /><rect x="36.5" y="21.5" width="17" height="20" /><rect x="18.5" y="42.5" width="17" height="20" />
+        </g>
+        <g style={{ fill: insight }} opacity="0.6">
+          <rect x="18.5" y="0.5" width="17" height="20" /><rect x="0.5" y="42.5" width="17" height="20" />
+        </g>
+      </g>
+      <g style={{ stroke: insight }} strokeWidth="0.9" fill="none" strokeLinecap="round">
+        <path d="M62 27h-7v-5M130 27h7v-5M62 78h-7v5M130 78h7v5" />
+      </g>
+      <text x="24" y="20" style={{ fill: signal }} fontFamily="monospace" fontSize="7" opacity="0.8" letterSpacing="1">DETECT</text>
+      <text x="24" y="86" style={{ fill: insight }} fontFamily="monospace" fontSize="7" opacity="0.8" letterSpacing="1">SOLVE</text>
     </>
   );
 }
 
-/** Sign language: a frame is cleaned, classified, captioned live. */
+/** Sign language: hand landmarks and the skeleton connecting them. */
 function Gesture() {
   return (
     <>
-      <Node x={24} cy={146} w={78} lines={['WEBCAM', 'FRAME']} tone={hair} />
-      <Arrow x1={102} x2={118} y={146} />
-      <Node x={118} cy={146} w={92} lines={['OPENCV', 'PRE-PROCESS']} />
-      <text x="164" y="196" fontSize="8" textAnchor="middle"
-        style={{ ...mono, fill: 'var(--text-faint)' }}>SKIN + CONTOUR</text>
-
-      <Arrow x1={210} x2={226} y={146} />
-      <rect x="226" y="120" width="110" height="52" rx="16"
-        {...stroke} style={{ stroke: teal }} strokeWidth="1.2" />
-      <text x="281" y="142" fontSize="9" textAnchor="middle" style={{ ...mono, fill: 'var(--text-muted)' }}>CUSTOM CNN</text>
-      <text x="281" y="156" fontSize="8" textAnchor="middle" style={{ ...mono, fill: teal }}>35 GESTURES</text>
-
-      <Arrow x1={336} x2={350} y={146} />
-      <Node x={350} cy={146} w={84} lines={['REAL-TIME', 'INFERENCE']} />
-      <Arrow x1={434} x2={446} y={146} tone={apricot} />
-      <Result x={446} cy={146} w={62} lines={['LIVE TEXT', 'CAPTION']} />
+      <g transform="translate(74 24)">
+        <g style={{ stroke: signal }} strokeWidth="0.8" fill="none" opacity="0.7" strokeLinecap="round">
+          <path d="M22 58 13 38 10 21M22 58 21 35 21 15M22 58 30 35 33 14M22 58 37 36 42 20M22 58 9 49 3 41" />
+        </g>
+        <g style={{ fill: signal }}>
+          <circle cx="13" cy="38" r="1.5" /><circle cx="21" cy="35" r="1.5" /><circle cx="30" cy="35" r="1.5" />
+          <circle cx="37" cy="36" r="1.5" /><circle cx="9" cy="49" r="1.5" />
+        </g>
+        <g style={{ fill: insight }}>
+          <circle cx="10" cy="21" r="2" /><circle cx="21" cy="15" r="2" /><circle cx="33" cy="14" r="2" />
+          <circle cx="42" cy="20" r="2" /><circle cx="3" cy="41" r="2" />
+        </g>
+        <circle cx="22" cy="58" r="2.4" style={{ fill: signal }} />
+      </g>
+      <g style={{ stroke: faint }} strokeWidth="0.6" fill="none" opacity="0.8">
+        <path d="M62 18h-8v8M130 18h8v8M62 94h-8v-8M130 94h8v-8" />
+      </g>
+      <text x="24" y="20" style={{ fill: signal }} fontFamily="monospace" fontSize="7" opacity="0.8" letterSpacing="1">CAPTURE</text>
+      <text x="118" y="86" style={{ fill: insight }} fontFamily="monospace" fontSize="7" opacity="0.8" letterSpacing="1">A-Z 1-9</text>
     </>
   );
 }
@@ -140,13 +112,20 @@ function Gesture() {
 const MOTIFS = { equation: Equation, grid: Grid, gesture: Gesture };
 
 export function ProjectMotif({ motif }) {
-  const ref = useDrawOn({ duration: 900, stagger: 28 });
+  // Slower and looser than a sparkline: this is a sketch being made, not a
+  // measurement landing.
+  const ref = useDrawOn({ duration: 1100, stagger: 55 });
   const Shape = MOTIFS[motif];
   if (!Shape) return null;
 
+  // Drawn on a 192x108 grid, presented on 384x216: the sketch keeps its
+  // proportions without ballooning when a card goes full width.
   return (
-    <svg ref={ref} viewBox="0 0 520 293" preserveAspectRatio="xMidYMid meet" focusable="false">
-      <Shape />
+    <svg ref={ref} viewBox="0 0 384 216" preserveAspectRatio="xMidYMid slice" focusable="false">
+      <g transform="scale(2)">
+        <Frame id={`motif-grid-${motif}`} />
+        <Shape />
+      </g>
     </svg>
   );
 }

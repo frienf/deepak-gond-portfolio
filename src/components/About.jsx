@@ -6,7 +6,7 @@ export function About() {
   return (
     <section className="section" id="about" aria-labelledby="about-title">
       <div className="container">
-        <SectionHead index="06" eyebrow="About" title="The person behind the dashboards." titleId="about-title" />
+        <SectionHead index="07" eyebrow="About" title="The person behind the dashboards." titleId="about-title" />
 
         <div className="about">
           <div className="js-reveal">
