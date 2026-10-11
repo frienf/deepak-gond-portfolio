@@ -106,9 +106,7 @@ tiers, one-way adaptive DPR, off-screen and hidden-tab pause, full dispose.
 
 1. `index.html` still uses the placeholder domain `https://deepakgond.dev/`
    in `canonical`, `og:url` and the JSON-LD — all marked `TODO`.
-2. `og:image` points at `/og.png`, which does not exist yet. Export it from
-   `public/og.svg` (LinkedIn, X and Slack won't render SVG).
-3. Decide the deploy target. GitHub Pages from
+2. Decide the deploy target. GitHub Pages from
    `frienf/deepak-gond-portfolio` serves at a subpath, which needs
    `base: '/deepak-gond-portfolio/'` in `vite.config.js`, unless the repo is
    renamed `frienf.github.io`.

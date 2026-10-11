@@ -115,15 +115,24 @@ here rendered the page in a background tab where those metrics are not reported.
 - `prefers-reduced-motion` honoured in both CSS and JS; no content is motion-dependent
 - All 39 interactive elements measured at 44px or larger; no horizontal scrolling at any width
 
-## One thing left to do
+## Social card
 
-`public/og.svg` is the social preview design, but `index.html` points
-`og:image` at `/og.png`. LinkedIn, X and Slack do not render SVG previews, so
-export the SVG to a 1200x630 PNG and drop it in `public/`:
+`public/og.png` (1200x630) is generated from `public/og.svg`:
 
 ```bash
-npx --yes sharp-cli --input public/og.svg --output public/og.png resize 1200 630
+npm run og
 ```
 
-Then set `og:url`, `twitter:*` and the `canonical` link to the real domain —
-they currently use the placeholder `https://deepakgond.dev/`.
+Edit the SVG, never the PNG. The rasteriser needs the brand fonts as TTF,
+which `.cache/fonts` holds; regenerate them with `pip install fonttools
+brotli` and the one-liner in the header of `scripts/make-og.mjs`. Without
+them the script still runs but substitutes system fonts.
+
+## Before launch
+
+`index.html` still uses the placeholder domain `https://deepakgond.dev/` in
+`canonical`, `og:url` and the JSON-LD - each marked `TODO`. Set those to the
+real domain, and pick a deploy target: GitHub Pages from
+`frienf/deepak-gond-portfolio` serves at a subpath, which needs
+`base: '/deepak-gond-portfolio/'` in `vite.config.js` unless the repo is
+renamed `frienf.github.io`.
