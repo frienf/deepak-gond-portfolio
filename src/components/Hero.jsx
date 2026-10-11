@@ -3,10 +3,10 @@ import { profile } from '../data/profile.js';
 import { Icon } from './Icon.jsx';
 import { HeroCanvas } from './HeroCanvas.jsx';
 
-export function Hero({ onSceneReady }) {
+export function Hero({ onSceneReady, theme }) {
   return (
     <section className="hero section" id="top">
-      <HeroCanvas onReady={onSceneReady} />
+      <HeroCanvas onReady={onSceneReady} theme={theme} />
       <div className="hero__scrim" aria-hidden="true" />
 
       <div className="container">

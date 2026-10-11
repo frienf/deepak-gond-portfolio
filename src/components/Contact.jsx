@@ -21,6 +21,8 @@ export function Contact() {
             </a>
           </div>
 
+          <p className="contact__note">{contact.responseNote}</p>
+
           <ul className="contact__links">
             {contact.links.map((link) => (
               <li key={link.href}>

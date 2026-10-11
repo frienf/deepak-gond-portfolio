@@ -67,7 +67,16 @@
 
   <!-- Reveal animations hide content only when scripting is available, so
        the page is fully readable with JavaScript off. -->
-  <script>document.documentElement.classList.add('js');</script>
+  <script>
+    document.documentElement.classList.add('js');
+    // Applied before first paint: reading this in React instead would show
+    // a frame of the wrong theme on every load.
+    try {
+      if (localStorage.getItem('portfolio-theme') === 'light') {
+        document.documentElement.dataset.theme = 'light';
+      }
+    } catch (e) { /* storage blocked - dark default is fine */ }
+  </script>
 
   <script type="module" src="/src/main.jsx"></script>
 </head>
@@ -123,6 +132,13 @@
     <symbol id="i-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="7" cy="7" r="3" /><circle cx="17" cy="7" r="3" /><circle cx="12" cy="17" r="3" />
       <path d="M9.5 8.8 11 14.5m4-5.7L13 14.5M10 7h4" />
+    </symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="4.2" />
+      <path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6" />
+    </symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.4 8.4 0 1 0 10.2 10.2Z" />
     </symbol>
     <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="m4 12.5 5 5L20 6.5" />

@@ -10,10 +10,12 @@ import { About } from './components/About.jsx';
 import { Contact } from './components/Contact.jsx';
 import { SiteFooter } from './components/SiteFooter.jsx';
 import { useScrollAnimations } from './hooks/useScrollAnimations.js';
+import { useTheme } from './hooks/useTheme.js';
 
 export default function App() {
   const mainRef = useRef(null);
   const [pipeline, setPipeline] = useState(null);
+  const { theme, toggle } = useTheme();
 
   // Stable identity: HeroCanvas runs an effect keyed on this callback.
   const handleSceneReady = useCallback((scene) => setPipeline(scene), []);
@@ -23,10 +25,10 @@ export default function App() {
   return (
     <>
       <a className="skip-link" href="#main">Skip to content</a>
-      <SiteHeader />
+      <SiteHeader theme={theme} onToggleTheme={toggle} />
 
       <main id="main" ref={mainRef}>
-        <Hero onSceneReady={handleSceneReady} />
+        <Hero onSceneReady={handleSceneReady} theme={theme} />
         <Impact />
         <Workflow />
         <Experience />

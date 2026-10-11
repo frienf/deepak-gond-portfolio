@@ -47,12 +47,12 @@ p { text-wrap: pretty; }
 
 a {
   color: var(--signal);
-  text-decoration-color: oklch(80% 0.125 195 / 0.35);
+  text-decoration-color: var(--signal-edge);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.25em;
   transition: color var(--dur) var(--ease), text-decoration-color var(--dur) var(--ease);
 }
-a:hover { color: var(--ink-000); text-decoration-color: currentColor; }
+a:hover { color: var(--heading); text-decoration-color: currentColor; }
 
 ul, ol { padding: 0; list-style: none; }
 
@@ -66,7 +66,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 :focus:not(:focus-visible) { outline: none; }
 
-::selection { background: var(--signal); color: var(--ink-900); }
+::selection { background: var(--signal); color: var(--bg); }
 
 /* --- Skip link --- */
 .skip-link {
@@ -76,7 +76,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   z-index: 100;
   padding: var(--space-2xs) var(--space-sm);
   background: var(--signal);
-  color: var(--ink-900);
+  color: var(--bg);
   font-weight: 600;
   border-radius: var(--radius-sm);
   transform: translateY(-200%);
@@ -152,8 +152,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .display {
   font-family: var(--font-display);
+  /* Weight stays at 400 at every size - the serif's stroke contrast and
+     the tight tracking carry the emphasis instead of extra weight. */
   font-weight: 400;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   line-height: 1.02;
 }
 
@@ -198,22 +200,22 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .btn--primary {
   background: var(--signal);
-  color: oklch(18% 0.03 255);
+  color: var(--on-signal);
 }
 .btn--primary:hover {
-  background: var(--ink-000);
-  color: var(--ink-900);
+  background: var(--heading);
+  color: var(--bg);
 }
 
 .btn--ghost {
-  background: oklch(99% 0.002 255 / 0.03);
+  background: var(--hover-surface);
   border-color: var(--line-strong);
   color: var(--text);
 }
 .btn--ghost:hover {
-  background: oklch(99% 0.002 255 / 0.07);
+  background: var(--press-surface);
   border-color: var(--signal);
-  color: var(--ink-000);
+  color: var(--heading);
 }
 
 .btn__arrow { transition: transform var(--dur) var(--ease); }
