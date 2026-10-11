@@ -47,7 +47,7 @@ export function PipelineDiagram() {
 
   return (
     <figure className="pipeline-diagram" aria-hidden="true">
-      <svg ref={ref} viewBox="0 0 1120 424" role="img" focusable="false">
+      <svg ref={ref} viewBox="0 0 1120 424" focusable="false">
         <defs>
           <radialGradient id="core-glow" cx="0.5" cy="0.5" r="0.5">
             <stop offset="0" stopColor="var(--signal)" stopOpacity="0.22" />

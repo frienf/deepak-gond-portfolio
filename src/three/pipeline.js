@@ -208,9 +208,15 @@ function stageColor(mix, palette) {
  */
 export function createPipelineScene(canvas, options = {}) {
   const reducedMotion = Boolean(options.reducedMotion);
-  const palette = PALETTES[options.theme === 'light' ? 'light' : 'dark'];
-  palette.rawColor = new THREE.Color(palette.raw);
-  palette.insightColor = new THREE.Color(palette.insight);
+  /* A local copy, not the shared preset. PALETTES is module-level, and
+     both StrictMode's double mount and a theme toggle would otherwise be
+     writing their colour objects onto the same object. */
+  const preset = PALETTES[options.theme === 'light' ? 'light' : 'dark'];
+  const palette = {
+    ...preset,
+    rawColor: new THREE.Color(preset.raw),
+    insightColor: new THREE.Color(preset.insight),
+  };
   const isSmall = window.matchMedia('(max-width: 48rem)').matches;
   const isWeak = (navigator.hardwareConcurrency || 8) <= 4;
 

@@ -1156,6 +1156,10 @@
 }
 
 .system {
+  /* The steps become sr-only at >=64rem via position: absolute, which
+     needs a local containing block or it resolves against whatever is
+     positioned further up. */
+  position: relative;
   display: grid;
   gap: var(--space-sm);
   padding: var(--card-pad);

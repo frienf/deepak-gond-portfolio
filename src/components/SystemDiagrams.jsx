@@ -63,7 +63,7 @@ function Result({ x, cy, w, lines }) {
 }
 
 /** MathSketch: a sketch becomes an image, is read, and comes back solved. */
-function Equation() {
+function MathSketchFlow() {
   return (
     <>
       <Node x={22} cy={146} w={78} lines={['CANVAS', 'SKETCH']} tone={hair} />
@@ -88,7 +88,7 @@ function Equation() {
 }
 
 /** Sudoku: a photo is read by OpenCV, classified, solved. */
-function Grid() {
+function SudokuFlow() {
   const subs = [['GRID DETECT', 126], ['CELL EXTRACT', 154], ['WARP', 182]];
   return (
     <>
@@ -118,7 +118,7 @@ function Grid() {
 }
 
 /** Sign language: a frame is cleaned, classified, captioned live. */
-function Gesture() {
+function SignLanguageFlow() {
   return (
     <>
       <Node x={24} cy={146} w={78} lines={['WEBCAM', 'FRAME']} tone={hair} />
@@ -141,11 +141,17 @@ function Gesture() {
   );
 }
 
-const DIAGRAMS = { equation: Equation, grid: Grid, gesture: Gesture };
+/* Keyed by the system's own id, so there is no second vocabulary to keep
+   in step with the data. */
+const DIAGRAMS = {
+  mathsketch: MathSketchFlow,
+  sudoku: SudokuFlow,
+  'sign-language': SignLanguageFlow,
+};
 
-function Diagram({ motif }) {
+function Diagram({ id }) {
   const ref = useDrawOn({ duration: 900, stagger: 28 });
-  const Shape = DIAGRAMS[motif];
+  const Shape = DIAGRAMS[id];
   if (!Shape) return null;
 
   return (
@@ -189,7 +195,7 @@ export function SystemDiagrams() {
               <h3 className="system__title">{system.title}</h3>
               <p className="system__summary">{system.summary}</p>
             </div>
-            <Diagram motif={system.motif} />
+            <Diagram id={system.id} />
             <ol className="system__steps">
               {system.steps.map((step) => <li key={step}>{step}</li>)}
             </ol>

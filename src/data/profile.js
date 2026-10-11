@@ -268,7 +268,6 @@ export const projects = [
 export const systems = [
   {
     id: 'mathsketch',
-    motif: 'equation',
     title: 'MathSketch',
     summary: 'Handwriting in, solved LaTeX out.',
     steps: [
@@ -281,7 +280,6 @@ export const systems = [
   },
   {
     id: 'sudoku',
-    motif: 'grid',
     title: 'Sudoku Solver',
     summary: 'A photo of a puzzle, read and solved.',
     steps: [
@@ -294,7 +292,6 @@ export const systems = [
   },
   {
     id: 'sign-language',
-    motif: 'gesture',
     title: 'Sign Language Translator',
     summary: 'Finger-spelling captioned as you sign.',
     steps: [
