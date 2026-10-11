@@ -1200,3 +1200,35 @@
     white-space: nowrap;
   }
 }
+
+/* Data moving along the diagram connectors.
+   A dashed overlay scrolling its own offset - no JS, no per-frame work,
+   and the compositor handles it. useDrawOn sees the authored dash pattern
+   and fades these paths in rather than drawing them, which is the right
+   behaviour here: the line appears, then starts carrying. */
+.system__svg .flow {
+  stroke-dasharray: 3 9;
+  animation: data-flow 1.6s linear infinite;
+}
+@keyframes data-flow {
+  to { stroke-dashoffset: -12; }
+}
+
+/* A loop that never stops is a battery cost and a distraction. It runs
+   only while the section is on screen. */
+.systems:not(.is-live) .system__svg .flow { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .system__svg .flow {
+    animation: none;
+    stroke-dasharray: none;
+  }
+}
+
+/* Skill groups start slightly small as well as low, so the cascade reads
+   as arriving rather than just fading. Scoped to .js so the page is
+   complete without scripting. */
+.js .skill-group.js-reveal { transform: translateY(1.25rem) scale(0.96); }
+@media (prefers-reduced-motion: reduce) {
+  .js .skill-group.js-reveal { transform: none; }
+}

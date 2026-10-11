@@ -13,6 +13,7 @@
  * text. That list is the diagram's accessible equivalent at every size.
  */
 
+import { useEffect, useRef, useState } from 'react';
 import { useDrawOn } from '../hooks/useDrawOn.js';
 import { systems } from '../data/profile.js';
 import { SectionHead } from './SectionHead.jsx';
@@ -44,7 +45,7 @@ function Node({ x, cy, w, h = 40, lines, tone = teal, size = 9 }) {
 function Arrow({ x1, x2, y, tone = teal }) {
   return (
     <>
-      <path d={`M${x1} ${y}H${x2 - 4}`} {...stroke} style={{ stroke: tone }} strokeWidth="1" opacity="0.6" />
+      <path className="flow" d={`M${x1} ${y}H${x2 - 4}`} {...stroke} style={{ stroke: tone }} strokeWidth="1" opacity="0.6" />
       <path d={`M${x2 - 8} ${y - 3.5}L${x2 - 3} ${y}L${x2 - 8} ${y + 3.5}`}
         {...stroke} style={{ stroke: tone }} strokeWidth="1" opacity="0.6" />
     </>
@@ -74,13 +75,13 @@ function Equation() {
       <text x="252" y="143" fontSize="9" textAnchor="middle" style={{ ...mono, fill: teal }}>FASTAPI</text>
       <text x="252" y="156" fontSize="8" textAnchor="middle" style={{ ...mono, fill: 'var(--text-faint)' }}>PRE-PROC</text>
 
-      <path d="M252 104 C 252 80 280 78 310 78" {...stroke} style={{ stroke: teal }} strokeWidth="1" opacity="0.6" />
-      <path d="M252 188 C 252 212 280 214 310 214" {...stroke} style={{ stroke: teal }} strokeWidth="1" opacity="0.6" />
+      <path className="flow" d="M252 104 C 252 80 280 78 310 78" {...stroke} style={{ stroke: teal }} strokeWidth="1" opacity="0.6" />
+      <path className="flow" d="M252 188 C 252 212 280 214 310 214" {...stroke} style={{ stroke: teal }} strokeWidth="1" opacity="0.6" />
       <Node x={310} cy={78} w={92} lines={['OPENROUTER', 'VISION']} />
       <Node x={310} cy={214} w={92} lines={['MATHJAX', 'RENDER']} />
 
-      <path d="M402 78 C 420 78 424 118 430 134" {...stroke} style={{ stroke: apricot }} strokeWidth="1" opacity="0.55" />
-      <path d="M402 214 C 420 214 424 174 430 158" {...stroke} style={{ stroke: apricot }} strokeWidth="1" opacity="0.55" />
+      <path className="flow" d="M402 78 C 420 78 424 118 430 134" {...stroke} style={{ stroke: apricot }} strokeWidth="1" opacity="0.55" />
+      <path className="flow" d="M402 214 C 420 214 424 174 430 158" {...stroke} style={{ stroke: apricot }} strokeWidth="1" opacity="0.55" />
       <Result x={430} cy={146} w={76} lines={['LATEX +', 'SOLUTION']} />
     </>
   );
@@ -156,6 +157,21 @@ function Diagram({ motif }) {
 }
 
 export function SystemDiagrams() {
+  /* The connector flow is a continuous loop, so it is gated on visibility.
+     useInView is deliberately one-shot, which is wrong here - it would
+     latch on and the loop would never pause again. This observer stays
+     subscribed and reports both directions. */
+  const liveRef = useRef(null);
+  const [live, setLive] = useState(false);
+
+  useEffect(() => {
+    const node = liveRef.current;
+    if (!node) return undefined;
+    const observer = new IntersectionObserver(([entry]) => setLive(entry.isIntersecting));
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section className="section" id="systems" aria-labelledby="systems-title">
       <div className="container">
@@ -167,7 +183,7 @@ export function SystemDiagrams() {
           lede="The same three projects, as architecture rather than outcome — what goes in, what processes it, and what comes out."
         />
 
-        <div className="systems">
+        <div className={`systems${live ? ' is-live' : ''}`} ref={liveRef}>
           {systems.map((system) => (
             <article className="system js-reveal" key={system.id}>
               <div className="system__head">

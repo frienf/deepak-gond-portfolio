@@ -16,7 +16,7 @@ function showEverything(scope) {
  * until the reader happens to scroll.
  */
 function revealWhatIsAlreadyVisible(scope) {
-  const onScreen = gsap.utils.toArray(scope.querySelectorAll('.js-reveal')).filter((el) => {
+  const onScreen = gsap.utils.toArray(scope.querySelectorAll('.js-reveal:not(.skill-group)')).filter((el) => {
     const rect = el.getBoundingClientRect();
     return rect.top < window.innerHeight * 0.95 && rect.bottom > 0;
   });
@@ -62,7 +62,7 @@ export function useScrollAnimations(scopeRef, pipeline) {
       }
 
       // Batched so a grid of cards shares one trigger and staggers together
-      ScrollTrigger.batch('.js-reveal', {
+      ScrollTrigger.batch('.js-reveal:not(.skill-group)', {
         start: 'top 88%',
         once: true,
         onEnter: (batch) => gsap.to(batch, {
@@ -73,6 +73,25 @@ export function useScrollAnimations(scopeRef, pipeline) {
           ease: 'power3.out',
           overwrite: true,
           onComplete: () => gsap.set(batch, { clearProps: 'willChange' }),
+        }),
+      });
+
+      /* Skills cascade in one after another with a slight overshoot on
+         arrival - the one place a little bounce is right, because the
+         section is a list of capabilities rather than a measurement.
+         Excluded from the generic batch above via :not(). */
+      ScrollTrigger.batch('.skill-group', {
+        start: 'top 90%',
+        once: true,
+        onEnter: (batch) => gsap.to(batch, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.55,
+          stagger: 0.07,
+          ease: 'back.out(1.4)',
+          overwrite: true,
+          onComplete: () => gsap.set(batch, { clearProps: 'willChange,scale' }),
         }),
       });
 
