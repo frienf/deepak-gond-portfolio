@@ -3,6 +3,7 @@ import { workflow } from '../data/profile.js';
 import { SectionHead } from './SectionHead.jsx';
 import { TagRow } from './Tag.jsx';
 import { StageGlyph } from './StageGlyph.jsx';
+import { PipelineDiagram } from './PipelineDiagram.jsx';
 
 const STEP = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
 
@@ -39,6 +40,8 @@ export function Workflow() {
           titleId="work-title"
           lede="Seven steps, the same every time. Pick a step to see the tools I reach for and what it looked like in production."
         />
+
+        <PipelineDiagram />
 
         <div className="workflow js-reveal">
           <div

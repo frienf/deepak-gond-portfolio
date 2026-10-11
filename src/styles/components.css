@@ -421,6 +421,19 @@
 
 /* ======================= How I work ======================= */
 
+/* The labelled diagram needs real width to stay legible - at 375px its
+   13px type would render around 5px. Below 64rem the seven-step rail
+   underneath carries exactly the same information as text, so the diagram
+   simply stands down rather than being shrunk into illegibility. */
+.pipeline-diagram { display: none; }
+@media (min-width: 64rem) {
+  .pipeline-diagram {
+    display: block;
+    margin: 0 0 var(--space-xl);
+  }
+  .pipeline-diagram svg { width: 100%; height: auto; overflow: visible; }
+}
+
 .workflow { display: grid; gap: var(--space-lg); }
 @media (min-width: 60rem) {
   .workflow {
