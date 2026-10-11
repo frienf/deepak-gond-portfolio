@@ -6,7 +6,7 @@ export function Contact() {
     <section className="section" id="contact" aria-labelledby="contact-title">
       <div className="container container--narrow">
         <div className="contact js-reveal">
-          <p className="eyebrow eyebrow--plain">08 &mdash; Contact</p>
+          <p className="eyebrow eyebrow--plain">07 &mdash; Contact</p>
           <h2 className="contact__title display" id="contact-title">{contact.title}</h2>
           <p className="section-lede" style={{ textAlign: 'center' }}>{contact.lede}</p>
 

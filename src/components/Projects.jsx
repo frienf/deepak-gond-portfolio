@@ -3,6 +3,7 @@ import { SectionHead } from './SectionHead.jsx';
 import { TagRow } from './Tag.jsx';
 import { ProjectMotif } from './ProjectMotif.jsx';
 import { Icon } from './Icon.jsx';
+import { SystemDiagrams } from './SystemDiagrams.jsx';
 
 function Project({ project }) {
   return (
@@ -56,6 +57,8 @@ export function Projects() {
         <div className="projects">
           {projects.map((project) => <Project key={project.id} project={project} />)}
         </div>
+
+        <SystemDiagrams />
       </div>
     </section>
   );

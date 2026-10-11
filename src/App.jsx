@@ -5,7 +5,6 @@ import { Impact } from './components/Impact.jsx';
 import { Workflow } from './components/Workflow.jsx';
 import { Experience } from './components/Experience.jsx';
 import { Projects } from './components/Projects.jsx';
-import { SystemDiagrams } from './components/SystemDiagrams.jsx';
 import { Skills } from './components/Skills.jsx';
 import { About } from './components/About.jsx';
 import { Contact } from './components/Contact.jsx';
@@ -34,7 +33,6 @@ export default function App() {
         <Workflow />
         <Experience />
         <Projects />
-        <SystemDiagrams />
         <Skills />
         <About />
         <Contact />

@@ -58,13 +58,11 @@
 .site-nav__list {
   display: flex;
   align-items: center;
-  /* Tight: eight uppercase mono labels plus the brand and the actions
-     only just clear 1280px. */
-  gap: clamp(0.125rem, 0.5vw, 0.5rem);
+  gap: clamp(0.25rem, 0.9vw, 0.75rem);
 }
 .site-nav__link {
   display: block;
-  padding: 0.5rem 0.4375rem;
+  padding: 0.5rem 0.5625rem;
   /* Mono for every functional string - nav included. The serif announces,
      the mono instructs. */
   font-family: var(--font-mono);
@@ -1136,7 +1134,21 @@
 }
 .theme-toggle svg { width: 1.125rem; height: 1.125rem; }
 
-/* ======================= Systems ======================= */
+/* ======================= Systems band =======================
+   Lives inside the Projects section, under the cards: the diagrams belong
+   to the projects, and at section width they stay legible where inside a
+   card their 9px type would render near 6px. */
+
+.systems-band {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--line);
+}
+.systems-band__head {
+  display: grid;
+  gap: var(--space-2xs);
+  margin-bottom: var(--space-lg);
+}
 
 .systems {
   display: grid;

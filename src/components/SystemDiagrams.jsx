@@ -1,5 +1,6 @@
 /**
- * System diagrams - one per project, in their own section.
+ * System diagrams - one per project, shown inside the Projects section
+ * beneath the cards.
  *
  * Each shows how the thing is actually wired: inputs left, processing
  * through the middle, the single result right. Teal carries every
@@ -16,7 +17,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDrawOn } from '../hooks/useDrawOn.js';
 import { systems } from '../data/profile.js';
-import { SectionHead } from './SectionHead.jsx';
 
 const teal = 'var(--signal)';
 const apricot = 'var(--insight)';
@@ -173,31 +173,29 @@ export function SystemDiagrams() {
   }, []);
 
   return (
-    <section className="section" id="systems" aria-labelledby="systems-title">
-      <div className="container">
-        <SectionHead
-          index="05"
-          eyebrow="Systems"
-          title="How each one is wired."
-          titleId="systems-title"
-          lede="The same three projects, as architecture rather than outcome — what goes in, what processes it, and what comes out."
-        />
-
-        <div className={`systems${live ? ' is-live' : ''}`} ref={liveRef}>
-          {systems.map((system) => (
-            <article className="system js-reveal" key={system.id}>
-              <div className="system__head">
-                <h3 className="system__title">{system.title}</h3>
-                <p className="system__summary">{system.summary}</p>
-              </div>
-              <Diagram motif={system.motif} />
-              <ol className="system__steps">
-                {system.steps.map((step) => <li key={step}>{step}</li>)}
-              </ol>
-            </article>
-          ))}
-        </div>
+    <div className="systems-band">
+      <div className="systems-band__head">
+        <p className="eyebrow">Under the hood</p>
+        <p className="section-lede">
+          The same three projects as architecture rather than outcome — what
+          goes in, what processes it, and what comes out.
+        </p>
       </div>
-    </section>
+
+      <div className={`systems${live ? ' is-live' : ''}`} ref={liveRef}>
+        {systems.map((system) => (
+          <article className="system js-reveal" key={system.id}>
+            <div className="system__head">
+              <h3 className="system__title">{system.title}</h3>
+              <p className="system__summary">{system.summary}</p>
+            </div>
+            <Diagram motif={system.motif} />
+            <ol className="system__steps">
+              {system.steps.map((step) => <li key={step}>{step}</li>)}
+            </ol>
+          </article>
+        ))}
+      </div>
+    </div>
   );
 }
