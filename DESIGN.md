@@ -8,8 +8,11 @@ An editorial technical journal, not a SaaS landing page. The page should
 read as something considered and measured — the same qualities the work
 itself claims. Three gestures carry it:
 
-- **A serif that never goes bold.** Display type is locked at weight 400;
-  stroke contrast and tight tracking do the work instead of weight.
+- **A serif that never goes bold.** Every heading is the serif at weight
+  400; stroke contrast and tight tracking do the work instead of weight.
+  A display serif needs size to hold its own, so card titles sit at the
+  larger step rather than body size - at ~19px the 400 weight went thin
+  and lost its hierarchy against the paragraph beneath it.
 - **Monospace for everything functional.** Labels, metrics, nav, tags, meta.
   The serif announces, the mono instructs, and numbers read as data.
 - **A warm ground.** Neither theme uses a neutral grey. Dark is warm
@@ -71,7 +74,7 @@ survives above `--text-faint` once faint is dragged down to clear the floor.
 
 | Family | Used for |
 | --- | --- |
-| **Instrument Serif** 400 | Display only: hero, section titles, the About lead, contact title |
+| **Instrument Serif** 400 | Every heading, at every size - hero, section titles, role names, card titles |
 | **Inter** 400/500/600 | Prose and UI labels |
 | **JetBrains Mono** 400/500 | Metrics, eyebrows, tags, nav, dates, all meta |
 
@@ -145,7 +148,7 @@ and all of it is `aria-hidden`.
 ## Do / don't
 
 **Do**
-- Keep display type at weight 400 at every size.
+- Keep headings in the serif at weight 400, at every size.
 - Use mono for anything functional or numeric.
 - Reach for a token; if one doesn't exist, add it to `tokens.css`.
 - Let hairlines and surface steps carry elevation.

@@ -739,7 +739,7 @@
   gap: var(--space-xs);
   padding: var(--space-sm);
 }
-.project__title { font-size: var(--fs-md); }
+.project__title { font-size: var(--fs-lg); }
 .project__kicker {
   font-family: var(--font-mono);
   font-size: var(--fs-micro);
@@ -1152,7 +1152,7 @@
   background: linear-gradient(180deg, var(--card-from), var(--card-to));
 }
 .system__head { display: grid; gap: 0.2rem; }
-.system__title { font-size: var(--fs-md); }
+.system__title { font-size: var(--fs-lg); }
 .system__summary { font-size: var(--fs-sm); color: var(--text-muted); }
 
 .system__svg { display: none; }
