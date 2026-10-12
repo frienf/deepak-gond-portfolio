@@ -6,13 +6,17 @@
  * is a light-theme-only palette. Both are now classes so tokens.css owns the
  * colour in each theme - see .brand-logo__ink / .brand-logo__accent.
  */
-export function BrandLogo({ title = 'InsightDeepak' }) {
+/**
+ * Decorative on purpose. The wordmark only ever sits inside the header's
+ * brand link, which carries the accessible name - labelling it here too
+ * would have a screen reader announce the name twice.
+ */
+export function BrandLogo() {
   return (
     <svg
       className="brand-logo"
       viewBox="120.8 322.9 782.4 122.3"
-      role="img"
-      aria-label={title}
+      aria-hidden="true"
       focusable="false"
     >
       <g transform="matrix(1.1814 0 0 1.1814 512.0094 384.0014)">

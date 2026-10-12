@@ -94,7 +94,10 @@ export function useDrawOn(options = {}) {
           el.style.opacity = '';
         }
       });
-    }, { rootMargin: '0px 0px -12% 0px' });
+      // Start 200px below the fold. The old -12% shrank the root instead,
+      // so the art only began drawing once it was already on screen and a
+      // fast scroll arrived to find it blank.
+    }, { rootMargin: '0px 0px 200px 0px' });
 
     observer.observe(root);
     return () => observer.disconnect();

@@ -8,4 +8,27 @@ export default defineConfig({
      move the site to the root. */
   base: '/deepak-gond-portfolio/',
   plugins: [react()],
+
+  /* Split the two big dependencies out of the app chunk. This does not make
+     the download smaller - the bytes are the same - it makes them cacheable
+     separately, so shipping a copy change no longer re-downloads 336 KB of
+     React and GSAP along with it.
+
+     GSAP is deliberately NOT lazy-loaded despite being 114 KB of critical
+     path. `.js .js-reveal` hides content the moment the inline script adds
+     the `js` class, and GSAP is what reveals it again - defer GSAP and
+     every section below the fold stays blank until its chunk lands, which
+     is the exact problem the reveal thresholds were just widened to fix. */
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/three')) return 'vendor-three';
+          if (id.includes('node_modules/gsap')) return 'vendor-gsap';
+          if (id.includes('node_modules/react')) return 'vendor-react';
+          return undefined;
+        },
+      },
+    },
+  },
 });

@@ -5,7 +5,10 @@ import { useEffect, useRef, useState } from 'react';
  * @param {string} rootMargin
  * @returns {[React.RefObject, boolean]}
  */
-export function useInView(rootMargin = '0px 0px -15% 0px') {
+// Default leads the viewport by 200px, matching the scroll reveals: the
+// counters and sparklines should already be running when they arrive, not
+// sitting at zero. The old -15% shrank the root and fired them late.
+export function useInView(rootMargin = '0px 0px 200px 0px') {
   const ref = useRef(null);
   const [seen, setSeen] = useState(false);
 

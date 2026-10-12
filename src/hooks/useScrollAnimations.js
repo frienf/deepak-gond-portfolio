@@ -18,7 +18,9 @@ function showEverything(scope) {
 function revealWhatIsAlreadyVisible(scope) {
   const onScreen = gsap.utils.toArray(scope.querySelectorAll('.js-reveal:not(.skill-group)')).filter((el) => {
     const rect = el.getBoundingClientRect();
-    return rect.top < window.innerHeight * 0.95 && rect.bottom > 0;
+    // Same 200px lead the scroll triggers use, so a deep link resolves the
+    // row just below the fold too rather than leaving it blank.
+    return rect.top < window.innerHeight + 200 && rect.bottom > 0;
   });
   if (onScreen.length) {
     gsap.to(onScreen, { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, overwrite: true });
@@ -68,12 +70,15 @@ export function useScrollAnimations(scopeRef, pipeline) {
 
       // Batched so a grid of cards shares one trigger and staggers together
       ScrollTrigger.batch('.js-reveal:not(.skill-group)', {
-        start: 'top 88%',
+        /* 200px below the fold, not inside it. 'top 88%' only fired once
+           the element was already 12% of a viewport into view, so a fast
+           scroll outran the reveal and left blank panels behind it. */
+        start: 'top bottom+=200',
         once: true,
         onEnter: (batch) => gsap.to(batch, {
           opacity: 1,
           y: 0,
-          duration: 0.7,
+          duration: 0.55,
           stagger: 0.08,
           ease: 'power3.out',
           overwrite: true,
@@ -91,7 +96,7 @@ export function useScrollAnimations(scopeRef, pipeline) {
          and so dips ~3.6% below full on the rebound, not perceptible.
          Excluded from the generic batch above via :not(). */
       ScrollTrigger.batch('.skill-group', {
-        start: 'top 90%',
+        start: 'top bottom+=200',
         once: true,
         onEnter: (batch) => gsap.to(batch, {
           opacity: 1,
