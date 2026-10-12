@@ -76,9 +76,15 @@ export function useScrollAnimations(scopeRef, pipeline) {
         }),
       });
 
-      /* Skills cascade in one after another with a slight overshoot on
-         arrival - the one place a little bounce is right, because the
-         section is a list of capabilities rather than a measurement.
+      /* Skills cascade in one after another and settle like a spring - the
+         one place a little bounce is right, because the section is a list of
+         capabilities rather than a measurement. Against back.out(1.4)'s
+         single 1.4px overshoot, this crosses the target five times and
+         overshoots ~6.1px of the 20px travel, which is what reads as
+         "springy". Period is the taste knob: 0.5 gives 3.9px and 0.65 gives
+         2.6px if this ever wants calming down. Opacity rides the same ease
+         and so pulses ~9.5% below full on the rebound - deliberate, it
+         reinforces the bounce.
          Excluded from the generic batch above via :not(). */
       ScrollTrigger.batch('.skill-group', {
         start: 'top 90%',
@@ -87,9 +93,9 @@ export function useScrollAnimations(scopeRef, pipeline) {
           opacity: 1,
           y: 0,
           scale: 1,
-          duration: 0.55,
+          duration: 0.9,
           stagger: 0.07,
-          ease: 'back.out(1.4)',
+          ease: 'elastic.out(1, 0.35)',
           overwrite: true,
           onComplete: () => gsap.set(batch, { clearProps: 'willChange,scale' }),
         }),

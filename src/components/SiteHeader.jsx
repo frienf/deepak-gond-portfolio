@@ -1,8 +1,8 @@
-import { nav, profile } from '../data/profile.js';
+import { nav } from '../data/profile.js';
 import { useStickyHeader } from '../hooks/useStickyHeader.js';
 import { useActiveSection } from '../hooks/useActiveSection.js';
 import { Icon } from './Icon.jsx';
-import { useDrawOn } from '../hooks/useDrawOn.js';
+import { BrandLogo } from './BrandLogo.jsx';
 import { ThemeToggle } from './ThemeToggle.jsx';
 
 const SECTION_IDS = nav.map((item) => item.id);
@@ -10,24 +10,16 @@ const SECTION_IDS = nav.map((item) => item.id);
 export function SiteHeader({ theme, onToggleTheme }) {
   const stuck = useStickyHeader();
   const active = useActiveSection(SECTION_IDS);
-  // The mark is in view from the first frame, so this plays once on load
-  const markRef = useDrawOn({ duration: 700, stagger: 90 });
+  /* The brand entrance is CSS, not useDrawOn. That hook parks every shape at
+     opacity 0 until an IntersectionObserver fires, which was fine when the
+     name sat outside the SVG - a miss cost you the icon. Now the wordmark is
+     the whole brand, so a miss would cost the entire header lockup. */
 
   return (
     <header className={`site-header${stuck ? ' is-stuck' : ''}`} id="site-header">
       <div className="container site-header__inner">
         <a className="brand" href="#top">
-          <span className="brand__mark" aria-hidden="true">
-            <svg ref={markRef} width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
-              <path d="M2 11.5 6 7l3 2.5L14 4" strokeLinecap="round" strokeLinejoin="round" />
-              <circle cx="6" cy="7" r="1.2" fill="currentColor" stroke="none" />
-              <circle cx="14" cy="4" r="1.6" fill="currentColor" stroke="none" />
-            </svg>
-          </span>
-          <span>
-            {profile.shortName}
-            <span className="brand__role">{profile.role}</span>
-          </span>
+          <BrandLogo />
         </a>
 
         <nav className="site-nav" aria-label="Sections">

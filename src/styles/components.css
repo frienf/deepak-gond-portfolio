@@ -27,34 +27,30 @@
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
   min-height: 2.75rem;
-  white-space: nowrap;
-  font-weight: 600;
-  font-size: var(--fs-sm);
   color: var(--heading);
   text-decoration: none;
-  letter-spacing: -0.01em;
 }
-.brand__mark {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-sm);
-  color: var(--signal);
-}
-.brand__role {
+/* The wordmark is ~6.4:1, so height drives width: 1.25rem tall lands it at
+   about 128px - roughly what the old mark-plus-name lockup occupied, which
+   is what keeps the nav from wrapping at 1280px. */
+.brand-logo {
   display: block;
-  font-family: var(--font-mono);
-  font-size: var(--fs-micro);
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-faint);
+  height: 1.25rem;
+  width: auto;
+  /* No fill-mode on purpose: the animation only supplies a `from`, so if it
+     never runs the wordmark is simply visible. Content is never gated on it.
+     --dur-slow collapses to 1ms under reduced motion. */
+  animation: brand-in var(--dur-slow) var(--ease);
 }
+@keyframes brand-in {
+  from { opacity: 0; transform: translateY(2px); }
+}
+/* The export hard-coded near-black and navy, a light-theme-only pair. Ink
+   rides currentColor so it follows .brand (and its hover); the accent takes
+   the signal token. No raw colour here - tokens.css still owns both. */
+.brand-logo__ink { fill: currentColor; }
+.brand-logo__accent { fill: var(--signal); }
 .site-nav__list {
   display: flex;
   align-items: center;
@@ -1245,6 +1241,11 @@
    as arriving rather than just fading. Scoped to .js so the page is
    complete without scripting. */
 .js .skill-group.js-reveal { transform: translateY(1.25rem) scale(0.96); }
+/* This rule outranks base.css's `.is-visible { transform: none }` on source
+   order, so the resolved state needs restating here - otherwise the
+   showEverything() fallback (hidden tab at mount, where GSAP never runs)
+   fades the groups in but leaves them low and undersized for good. */
+.js .skill-group.js-reveal.is-visible { transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .js .skill-group.js-reveal { transform: none; }
 }
