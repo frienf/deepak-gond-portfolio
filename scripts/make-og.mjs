@@ -45,3 +45,23 @@ writeFileSync(OUT, png);
 
 console.log(`[og] ${OUT}  ${resvg.width}x${resvg.height}  ${(png.length / 1024).toFixed(1)} KB`);
 console.log(`[og] fonts: ${fontFiles.length ? fontFiles.map((f) => f.split(/[\/]/).pop()).join(', ') : 'system'}`);
+
+/* iOS ignores an SVG in apple-touch-icon and falls back to a screenshot of
+   the page, so the monogram has to ship as a PNG too. Same rasteriser, and
+   favicon.svg is pure paths - no text, so no font dependency here. */
+const ICON_SRC = 'public/favicon.svg';
+const ICON_OUT = 'public/apple-touch-icon.png';
+const ICON_SIZE = 180;
+
+/* favicon.svg carries a viewBox but no width/height, and resvg then ignores
+   fitTo and renders at the viewBox size. Give it explicit dimensions. */
+const iconSrc = readFileSync(ICON_SRC, 'utf8')
+  .replace('<svg ', `<svg width="${ICON_SIZE}" height="${ICON_SIZE}" `);
+
+const icon = new Resvg(iconSrc, {
+  fitTo: { mode: 'width', value: ICON_SIZE },
+});
+const iconPng = icon.render().asPng();
+writeFileSync(ICON_OUT, iconPng);
+
+console.log(`[icon] ${ICON_OUT}  ${icon.width}x${icon.height}  ${(iconPng.length / 1024).toFixed(1)} KB`);

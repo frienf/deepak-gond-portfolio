@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- One route, no backend, so one entry. The in-page anchors (#impact,
+     #projects and the rest) are not separate URLs and must not be listed:
+     Search Console reports fragment URLs as duplicates of this one. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://frienf.github.io/deepak-gond-portfolio/</loc>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

@@ -53,12 +53,17 @@ export function useScrollAnimations(scopeRef, pipeline) {
       // would strand entrance tweens at opacity 0. Show it instead.
       if (document.hidden) showEverything(scope);
       else {
-        const items = scope.querySelectorAll('[data-hero-el]');
-        if (items.length) {
-          gsap.timeline({ defaults: { ease: 'power3.out' } })
-            .from(items, { y: 22, opacity: 0, duration: 0.85, stagger: 0.085 }, 0.1)
-            .from('.hero__canvas-wrap', { opacity: 0, duration: 1.6, ease: 'power2.out' }, 0);
-        }
+        /* The hero text has no entrance. Nothing in CSS hides it, so a
+           .from() here painted the headline, yanked it to opacity 0 a tick
+           later once React had hydrated, then faded it back - a visible
+           flash. It is also the LCP element, and an element at opacity 0
+           does not count as painted. It now renders once and stays.
+
+           The canvas keeps its fade: it is decorative, absolutely
+           positioned behind the text, and starts empty either way. */
+        gsap.from('.hero__canvas-wrap', {
+          opacity: 0, duration: 1.6, ease: 'power2.out',
+        });
       }
 
       // Batched so a grid of cards shares one trigger and staggers together
