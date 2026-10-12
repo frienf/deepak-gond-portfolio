@@ -11,15 +11,15 @@ export function Hero({ onSceneReady, theme }) {
 
       <div className="container">
         <div className="hero__content">
-          <p className="eyebrow" data-hero-el>{hero.eyebrow}</p>
+          <p className="eyebrow">{hero.eyebrow}</p>
 
-          <h1 className="hero__title display" data-hero-el>
+          <h1 className="hero__title display">
             {hero.titleLead}<em>{hero.titleAccent}</em>
           </h1>
 
-          <p className="hero__lede" data-hero-el>{hero.lede}</p>
+          <p className="hero__lede">{hero.lede}</p>
 
-          <div className="hero__actions" data-hero-el>
+          <div className="hero__actions">
             <a className="btn btn--primary" href="#impact">
               Explore my work
               <span className="btn__arrow" aria-hidden="true"><Icon name="arrow" size={18} /></span>
@@ -35,7 +35,7 @@ export function Hero({ onSceneReady, theme }) {
             </a>
           </div>
 
-          <ul className="hero__meta" data-hero-el>
+          <ul className="hero__meta">
             {hero.meta.map((item) => (
               <li key={item.text}><Icon name={item.icon} />{item.text}</li>
             ))}
@@ -45,7 +45,7 @@ export function Hero({ onSceneReady, theme }) {
 
       {/* Names the five stages the 3D scene draws, so the visual never
           carries information the text does not. */}
-      <div className="hero__legend" data-hero-el>
+      <div className="hero__legend">
         <h2 className="sr-only">The pipeline behind the visual</h2>
         <ol className="hero__legend-list">
           {hero.stages.map((stage) => (
