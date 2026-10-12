@@ -1,0 +1,10 @@
+# Heads up: crawlers only read robots.txt at the host root
+# (https://frienf.github.io/robots.txt). This is a project Pages site, so
+# this file is served at /deepak-gond-portfolio/robots.txt and is IGNORED.
+# It is here so the rules are correct if this ever moves to a user site or a
+# custom domain. Until then, submit the sitemap directly in Search Console.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://frienf.github.io/deepak-gond-portfolio/sitemap.xml
