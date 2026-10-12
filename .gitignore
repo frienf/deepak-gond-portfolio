@@ -12,3 +12,6 @@ dist-ssr/
 Thumbs.db
 *.log
 npm-debug.log*
+
+# Generated build-time assets (fonts converted for the OG rasteriser)
+.cache/

@@ -35,11 +35,15 @@ svg { fill: currentColor; }
    otherwise leave the inline icon sprite occupying real space. */
 [hidden] { display: none !important; }
 
+/* Headings are the serif, at 400, at every size. The stroke contrast and
+   the tight tracking carry the emphasis - weight never does. Labels that
+   happen to be headings (card eyebrows) opt back out to mono below. */
 h1, h2, h3, h4 {
   color: var(--heading);
-  line-height: 1.1;
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.15;
   text-wrap: balance;
-  font-weight: 600;
   letter-spacing: -0.02em;
 }
 

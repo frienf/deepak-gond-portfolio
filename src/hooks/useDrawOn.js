@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useReducedMotion } from './useReducedMotion.js';
+import { isDrawable } from './drawOnRule.js';
 
 /**
  * Draws SVG line art on as it scrolls into view.
@@ -16,12 +17,15 @@ import { useReducedMotion } from './useReducedMotion.js';
 const SHAPES = 'path, line, polyline, polygon, circle, rect, ellipse';
 
 /** Can this element be drawn, or does it have to fade? */
-function isDrawable(el) {
+function canDraw(el) {
   const style = getComputedStyle(el);
-  if (style.stroke === 'none' || parseFloat(style.strokeWidth) === 0) return false;
-  // A pattern already set by the author is part of the design - leave it be
-  if (style.strokeDasharray && style.strokeDasharray !== 'none') return false;
-  return typeof el.getTotalLength === 'function';
+  return isDrawable({
+    tagName: el.tagName,
+    stroke: style.stroke,
+    strokeWidth: style.strokeWidth,
+    strokeDasharray: style.strokeDasharray,
+    measurable: typeof el.getTotalLength === 'function',
+  });
 }
 
 /**
@@ -44,7 +48,7 @@ export function useDrawOn(options = {}) {
 
     const elements = [...root.querySelectorAll(SHAPES), ...root.querySelectorAll('text')];
     const plan = elements.map((el) => {
-      const draw = el.tagName !== 'text' && isDrawable(el);
+      const draw = canDraw(el);
       return { el, draw, length: draw ? el.getTotalLength() : 0 };
     });
 

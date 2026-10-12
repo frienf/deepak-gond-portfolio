@@ -27,41 +27,38 @@
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
   min-height: 2.75rem;
-  font-weight: 600;
-  font-size: var(--fs-sm);
   color: var(--heading);
   text-decoration: none;
-  letter-spacing: -0.01em;
 }
-.brand__mark {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-sm);
-  color: var(--signal);
-}
-.brand__role {
+/* The wordmark is ~6.4:1, so height drives width: 1.25rem tall lands it at
+   about 128px - roughly what the old mark-plus-name lockup occupied, which
+   is what keeps the nav from wrapping at 1280px. */
+.brand-logo {
   display: block;
-  font-family: var(--font-mono);
-  font-size: var(--fs-micro);
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-faint);
+  height: 1.25rem;
+  width: auto;
+  /* No fill-mode on purpose: the animation only supplies a `from`, so if it
+     never runs the wordmark is simply visible. Content is never gated on it.
+     --dur-slow collapses to 1ms under reduced motion. */
+  animation: brand-in var(--dur-slow) var(--ease);
 }
+@keyframes brand-in {
+  from { opacity: 0; transform: translateY(2px); }
+}
+/* The export hard-coded near-black and navy, a light-theme-only pair. Ink
+   rides currentColor so it follows .brand (and its hover); the accent takes
+   the signal token. No raw colour here - tokens.css still owns both. */
+.brand-logo__ink { fill: currentColor; }
+.brand-logo__accent { fill: var(--signal); }
 .site-nav__list {
   display: flex;
   align-items: center;
-  gap: clamp(0.25rem, 1.2vw, 1rem);
+  gap: clamp(0.25rem, 0.9vw, 0.75rem);
 }
 .site-nav__link {
   display: block;
-  padding: 0.5rem 0.625rem;
+  padding: 0.5rem 0.5625rem;
   /* Mono for every functional string - nav included. The serif announces,
      the mono instructs. */
   font-family: var(--font-mono);
@@ -421,6 +418,19 @@
 
 /* ======================= How I work ======================= */
 
+/* The labelled diagram needs real width to stay legible - at 375px its
+   13px type would render around 5px. Below 64rem the seven-step rail
+   underneath carries exactly the same information as text, so the diagram
+   simply stands down rather than being shrunk into illegibility. */
+.pipeline-diagram { display: none; }
+@media (min-width: 64rem) {
+  .pipeline-diagram {
+    display: block;
+    margin: 0 0 var(--space-xl);
+  }
+  .pipeline-diagram svg { width: 100%; height: auto; overflow: visible; }
+}
+
 .workflow { display: grid; gap: var(--space-lg); }
 @media (min-width: 60rem) {
   .workflow {
@@ -723,7 +733,7 @@
   gap: var(--space-xs);
   padding: var(--space-sm);
 }
-.project__title { font-size: var(--fs-md); }
+.project__title { font-size: var(--fs-lg); }
 .project__kicker {
   font-family: var(--font-mono);
   font-size: var(--fs-micro);
@@ -1119,3 +1129,123 @@
   color: var(--signal);
 }
 .theme-toggle svg { width: 1.125rem; height: 1.125rem; }
+
+/* ======================= Systems band =======================
+   Lives inside the Projects section, under the cards: the diagrams belong
+   to the projects, and at section width they stay legible where inside a
+   card their 9px type would render near 6px. */
+
+.systems-band {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--line);
+}
+.systems-band__head {
+  display: grid;
+  gap: var(--space-2xs);
+  margin-bottom: var(--space-lg);
+}
+
+.systems {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.system {
+  /* The steps become sr-only at >=64rem via position: absolute, which
+     needs a local containing block or it resolves against whatever is
+     positioned further up. */
+  position: relative;
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--card-pad);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, var(--card-from), var(--card-to));
+}
+.system__head { display: grid; gap: 0.2rem; }
+.system__title { font-size: var(--fs-lg); }
+.system__summary { font-size: var(--fs-sm); color: var(--text-muted); }
+
+.system__svg { display: none; }
+
+/* The steps are the diagram in words. They lead on small screens, where a
+   labelled diagram cannot stay legible, and stay available to screen
+   readers once the diagram takes over. */
+/* Vertical, and without connector rules: on a narrow screen a long step
+   wraps and any trailing connector dangles at the far edge. The numbers
+   carry the sequence on their own. */
+.system__steps {
+  display: grid;
+  gap: 0.45rem;
+  counter-reset: step;
+}
+.system__steps li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.625rem;
+  align-items: start;
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+.system__steps li::before {
+  counter-increment: step;
+  content: counter(step, decimal-leading-zero);
+  color: var(--signal);
+}
+.system__steps li:last-child { color: var(--insight); }
+.system__steps li:last-child::before { color: var(--insight); }
+
+@media (min-width: 64rem) {
+  .systems { gap: var(--space-xl); }
+  .system__svg { display: block; width: 100%; height: auto; overflow: visible; }
+  /* Diagram shown, so the list becomes the accessible equivalent only */
+  .system__steps {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* Data moving along the diagram connectors.
+   A dashed overlay scrolling its own offset - no JS, no per-frame work,
+   and the compositor handles it. useDrawOn sees the authored dash pattern
+   and fades these paths in rather than drawing them, which is the right
+   behaviour here: the line appears, then starts carrying. */
+.system__svg .flow {
+  stroke-dasharray: 3 9;
+  animation: data-flow 1.6s linear infinite;
+}
+@keyframes data-flow {
+  to { stroke-dashoffset: -12; }
+}
+
+/* A loop that never stops is a battery cost and a distraction. It runs
+   only while the section is on screen. */
+.systems:not(.is-live) .system__svg .flow { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .system__svg .flow {
+    animation: none;
+    stroke-dasharray: none;
+  }
+}
+
+/* Skill groups start slightly small as well as low, so the cascade reads
+   as arriving rather than just fading. Scoped to .js so the page is
+   complete without scripting. */
+.js .skill-group.js-reveal { transform: translateY(1.25rem) scale(0.96); }
+/* This rule outranks base.css's `.is-visible { transform: none }` on source
+   order, so the resolved state needs restating here - otherwise the
+   showEverything() fallback (hidden tab at mount, where GSAP never runs)
+   fades the groups in but leaves them low and undersized for good. */
+.js .skill-group.js-reveal.is-visible { transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .js .skill-group.js-reveal { transform: none; }
+}

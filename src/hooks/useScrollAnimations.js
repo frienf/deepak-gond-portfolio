@@ -16,7 +16,7 @@ function showEverything(scope) {
  * until the reader happens to scroll.
  */
 function revealWhatIsAlreadyVisible(scope) {
-  const onScreen = gsap.utils.toArray(scope.querySelectorAll('.js-reveal')).filter((el) => {
+  const onScreen = gsap.utils.toArray(scope.querySelectorAll('.js-reveal:not(.skill-group)')).filter((el) => {
     const rect = el.getBoundingClientRect();
     return rect.top < window.innerHeight * 0.95 && rect.bottom > 0;
   });
@@ -62,7 +62,7 @@ export function useScrollAnimations(scopeRef, pipeline) {
       }
 
       // Batched so a grid of cards shares one trigger and staggers together
-      ScrollTrigger.batch('.js-reveal', {
+      ScrollTrigger.batch('.js-reveal:not(.skill-group)', {
         start: 'top 88%',
         once: true,
         onEnter: (batch) => gsap.to(batch, {
@@ -73,6 +73,31 @@ export function useScrollAnimations(scopeRef, pipeline) {
           ease: 'power3.out',
           overwrite: true,
           onComplete: () => gsap.set(batch, { clearProps: 'willChange' }),
+        }),
+      });
+
+      /* Skills cascade in one after another and settle like a spring - the
+         one place a little bounce is right, because the section is a list of
+         capabilities rather than a measurement. Against back.out(1.4)'s
+         single 1.4px overshoot, this crosses the target five times and
+         overshoots ~6.1px of the 20px travel, which is what reads as
+         "springy". Period is the taste knob: 0.5 gives 3.9px and 0.65 gives
+         2.6px if this ever wants calming down. Opacity rides the same ease
+         and so pulses ~9.5% below full on the rebound - deliberate, it
+         reinforces the bounce.
+         Excluded from the generic batch above via :not(). */
+      ScrollTrigger.batch('.skill-group', {
+        start: 'top 90%',
+        once: true,
+        onEnter: (batch) => gsap.to(batch, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.9,
+          stagger: 0.07,
+          ease: 'elastic.out(1, 0.35)',
+          overwrite: true,
+          onComplete: () => gsap.set(batch, { clearProps: 'willChange,scale' }),
         }),
       });
 

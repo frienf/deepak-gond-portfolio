@@ -260,6 +260,50 @@ export const projects = [
   },
 ];
 
+/**
+ * Pipeline steps behind each project. These are the text form of the
+ * system diagrams - shown as a list on small screens, where a labelled
+ * diagram cannot stay legible, and read by screen readers everywhere.
+ */
+export const systems = [
+  {
+    id: 'mathsketch',
+    title: 'MathSketch',
+    summary: 'Handwriting in, solved LaTeX out.',
+    steps: [
+      'Canvas sketch',
+      'Base64 image',
+      'FastAPI pre-processing',
+      'OpenRouter vision + MathJax renderer',
+      'LaTeX and solution',
+    ],
+  },
+  {
+    id: 'sudoku',
+    title: 'Sudoku Solver',
+    summary: 'A photo of a puzzle, read and solved.',
+    steps: [
+      'Puzzle photo',
+      'OpenCV: grid detection, cell extraction, warp',
+      'TensorFlow digit classifier',
+      'Backtracking solver',
+      'Solved grid in Streamlit',
+    ],
+  },
+  {
+    id: 'sign-language',
+    title: 'Sign Language Translator',
+    summary: 'Finger-spelling captioned as you sign.',
+    steps: [
+      'Webcam frame',
+      'OpenCV pre-processing: skin and contour',
+      'Custom CNN across 35 gestures',
+      'Real-time inference',
+      'Live text caption',
+    ],
+  },
+];
+
 export const skillGroups = [
   {
     name: 'Data analysis & statistics',
