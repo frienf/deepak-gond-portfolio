@@ -6,7 +6,7 @@
   "description": "Portfolio of Deepak Jaygopal Gond - Data Analyst | Data Engineering",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.mjs",
     "preview": "vite preview",
     "og": "node scripts/make-og.mjs",
     "test": "node --test \"src/**/*.test.mjs\""
