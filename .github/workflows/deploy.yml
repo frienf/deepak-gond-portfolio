@@ -1,0 +1,64 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# deploy-pages needs these; the default GITHUB_TOKEN has none of them.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never cancel a deploy midway - one in-flight run finishes before the next
+# starts, so a half-uploaded artifact can't become the live site.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Vite 7 requires ^20.19.0 || >=22.12.0.
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm test
+
+      - run: npm run build
+
+      # The build is only correct while `base` in vite.config.js matches the
+      # Pages subpath. If the repo is renamed, this guard fails loudly here
+      # rather than shipping a site whose every asset 404s.
+      - name: Check asset base path
+        run: |
+          expected="/${GITHUB_REPOSITORY#*/}/assets/"
+          if ! grep -q "$expected" dist/index.html; then
+            echo "dist/index.html does not reference $expected"
+            echo "Set base in vite.config.js to '/${GITHUB_REPOSITORY#*/}/'."
+            grep -o '/[^"]*assets/[^"]*' dist/index.html | head -5
+            exit 1
+          fi
+          echo "Asset base path OK: $expected"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
