@@ -18,7 +18,11 @@ export function SiteHeader({ theme, onToggleTheme }) {
   return (
     <header className={`site-header${stuck ? ' is-stuck' : ''}`} id="site-header">
       <div className="container site-header__inner">
-        <a className="brand" href="#top">
+        {/* The name lives on the anchor, not left to the SVG's own
+            aria-label. A child's label does compute as the link's accessible
+            name, but it reads as "InsightDeepak" alone - which names the
+            logo rather than saying where the link goes. */}
+        <a className="brand" href="#top" aria-label="InsightDeepak — back to top">
           <BrandLogo />
         </a>
 

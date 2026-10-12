@@ -24,7 +24,18 @@ export function HeroCanvas({ onReady, theme }) {
           dispose() ends with forceContextLoss(), which retires that canvas's
           WebGL context for good - a rebuilt scene cannot get a new context
           from the same element, it would only ever receive the lost one. */}
-      <canvas key={theme} className="hero__canvas" id="pipeline-canvas" ref={canvasRef} />
+      {/* aria-hidden is already inherited from the wrapper; stating it on
+          the canvas too keeps the decorative intent if the wrapper ever
+          changes. Pointer events are off via .hero__canvas-wrap, and
+          tabIndex -1 keeps it out of the tab order. */}
+      <canvas
+        key={theme}
+        className="hero__canvas"
+        id="pipeline-canvas"
+        ref={canvasRef}
+        aria-hidden="true"
+        tabIndex={-1}
+      />
     </div>
   );
 }
