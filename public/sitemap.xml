@@ -5,6 +5,9 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://frienf.github.io/deepak-gond-portfolio/</loc>
+    <!-- Placeholder. scripts/stamp-sitemap.mjs overwrites this in dist/ with
+         the last commit's date on every build, so editing it here changes
+         nothing that ships. -->
     <lastmod>2026-10-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
