@@ -25,6 +25,10 @@ export default defineConfig({
         manualChunks(id) {
           if (id.includes('node_modules/three')) return 'vendor-three';
           if (id.includes('node_modules/gsap')) return 'vendor-gsap';
+          // Without this, Motion lands in the app chunk and ships on the
+          // critical path, re-downloaded on every content change. Matched
+          // before react, since motion/react resolves inside node_modules/motion.
+          if (id.includes('node_modules/motion')) return 'vendor-motion';
           if (id.includes('node_modules/react')) return 'vendor-react';
           return undefined;
         },

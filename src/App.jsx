@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
+import { MotionConfig } from 'motion/react';
 import { SiteHeader } from './components/SiteHeader.jsx';
 import { Hero } from './components/Hero.jsx';
 import { Impact } from './components/Impact.jsx';
@@ -23,7 +24,11 @@ export default function App() {
   useScrollAnimations(mainRef, pipeline);
 
   return (
-    <>
+    // reducedMotion="user" makes every motion component drop transform and
+    // layout animations when the OS asks for reduced motion, keeping opacity.
+    // Rule 6 is already honoured per-component; this is the library-wide
+    // backstop, so a future motion element cannot forget it. Renders no DOM.
+    <MotionConfig reducedMotion="user">
       <a className="skip-link" href="#main">Skip to content</a>
       <SiteHeader theme={theme} onToggleTheme={toggle} />
 
@@ -39,6 +44,6 @@ export default function App() {
       </main>
 
       <SiteFooter />
-    </>
+    </MotionConfig>
   );
 }
