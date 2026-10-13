@@ -7,6 +7,78 @@ import { ProjectMotif } from './ProjectMotif.jsx';
 import { Icon } from './Icon.jsx';
 import { SystemDiagrams } from './SystemDiagrams.jsx';
 
+// Motion-driven case study disclosure.
+//
+// The element stays a native <details> rather than becoming a button with
+// aria-expanded: with no JS the summary still toggles it, and the keyboard
+// semantics are the browser's rather than ours to re-implement.
+//
+// Once JS is up the summary's default action is cancelled and React owns
+// `open` instead, because the native element drops its content the instant
+// the attribute goes - there is nothing left to animate out. So `open` is
+// held through the exit and released only when Motion reports the collapse
+// finished. `is-open` carries the reader's intent, which is what the +/-
+// marker follows; `open` lags it by one exit.
+//
+// The pre-hydration resting state is the OPEN one, not the closed one. Motion
+// writes its target inline on first render, so a server-rendered height:0
+// would leave the case study permanently collapsed for a reader whose JS
+// never arrives. Resting open costs nothing - <details> is shut, so the
+// client's collapse on hydration happens behind a closed element. (Leaving
+// `animate` undefined until hydration does not work: Motion never attaches,
+// and the disclosure is then stuck open.)
+function CaseStudy({ project }) {
+  const ref = useRef(null);
+  const reduced = useReducedMotion();
+  const [expanded, setExpanded] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    // Adopt whatever the browser did with the summary before hydration,
+    // rather than snapping a card the reader just opened back shut.
+    if (ref.current?.open) { setOpen(true); setExpanded(true); }
+    setHydrated(true);
+  }, []);
+
+  const rested = !hydrated || expanded;
+
+  function toggle(event) {
+    if (!hydrated) return;
+    event.preventDefault();
+    if (expanded) setExpanded(false);
+    else { setOpen(true); setExpanded(true); }
+  }
+
+  return (
+    <details
+      ref={ref}
+      className={`project__details${expanded ? ' is-open' : ''}`}
+      open={hydrated ? open : undefined}
+    >
+      <summary onClick={toggle}>
+        Case study<span className="sr-only"> for {project.title}</span>
+      </summary>
+      <motion.div
+        className="project__case-wrap"
+        initial={false}
+        animate={rested ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}
+        // 240ms / --dur, the same out-cubic the rest of the state layer uses.
+        // No spring: DESIGN.md allows no overshoot anywhere.
+        transition={{ duration: reduced ? 0 : 0.24, ease: [0.33, 1, 0.68, 1] }}
+        onAnimationComplete={() => { if (!expanded) setOpen(false); }}
+      >
+        <dl className="project__case">
+          <div><dt>Problem</dt><dd>{project.problem}</dd></div>
+          <div><dt>Approach</dt><dd>{project.approach}</dd></div>
+          <div><dt>Outcome</dt><dd>{project.result}</dd></div>
+        </dl>
+        <TagRow items={project.tags} accent={project.accent} />
+      </motion.div>
+    </details>
+  );
+}
+
 // Motion pilot. These cards carry `project-reveal` instead of `js-reveal`, so
 // GSAP's ScrollTrigger.batch('.js-reveal:not(.skill-group)') and showEverything()
 // no longer select them. Motion owns opacity and y here outright - the CSS
@@ -59,17 +131,7 @@ function Project({ project }) {
         <h3 className="project__title">{project.title}</h3>
         <p className="project__summary">{project.summary}</p>
 
-        {/* Native <details>: progressive disclosure with no JS and
-            keyboard support for free. */}
-        <details className="project__details">
-          <summary>Case study<span className="sr-only"> for {project.title}</span></summary>
-          <dl className="project__case">
-            <div><dt>Problem</dt><dd>{project.problem}</dd></div>
-            <div><dt>Approach</dt><dd>{project.approach}</dd></div>
-            <div><dt>Outcome</dt><dd>{project.result}</dd></div>
-          </dl>
-          <TagRow items={project.tags} accent={project.accent} />
-        </details>
+        <CaseStudy project={project} />
       </div>
 
       <p className="project__footer">

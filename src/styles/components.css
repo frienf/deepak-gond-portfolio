@@ -772,6 +772,12 @@
   color: var(--text-faint);
 }
 .project__details[open] summary::after { content: "\2212"; }
+/* With JS the `open` attribute is held through the collapse (Projects.jsx),
+   so the marker follows `is-open` instead of lagging the exit by 240ms. */
+.js .project__details[open] summary::after { content: "+"; }
+.js .project__details.is-open summary::after { content: "\2212"; }
+/* Motion animates this wrapper's height; the clip is what makes 0 mean 0. */
+.project__case-wrap { overflow: hidden; }
 .project__case {
   display: grid;
   gap: var(--space-xs);
