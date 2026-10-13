@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["./.claude/hooks/no-raw-colors.mjs"],
+            "statusMessage": "Checking colour tokens"
+          }
+        ]
+      }
+    ]
+  }
+}
