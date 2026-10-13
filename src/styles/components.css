@@ -1128,6 +1128,13 @@
   border-color: var(--hover-border);
   color: var(--signal);
 }
+/* The glyph wrapper is its own grid item so the rotate spins about the icon's
+   centre and the button never reflows during the swap. */
+.theme-toggle__glyph {
+  display: grid;
+  place-items: center;
+  line-height: 0;
+}
 .theme-toggle svg { width: 1.125rem; height: 1.125rem; }
 
 /* ======================= Systems band =======================
@@ -1249,3 +1256,11 @@
 @media (prefers-reduced-motion: reduce) {
   .js .skill-group.js-reveal { transform: none; }
 }
+
+/* Motion pilot (Projects.jsx). Deliberately sets no opacity or transform:
+   Motion owns both on these cards and writes them inline. An earlier version
+   put the hidden start here, the way `.js .js-reveal` does in base.css, and
+   the card stayed stranded at opacity 0 - with two owners on one property the
+   library reads the CSS value as its target instead of animating away from it.
+   The class stays as the marker of that ownership, and to hint the compositor. */
+.project-reveal { will-change: opacity, transform; }
